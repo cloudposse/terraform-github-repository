@@ -1,12 +1,13 @@
 # Upstream changes from _extends are only recognized when modifications are made to this file in the default branch.
 _extends: .github
 repository:
-  name: terraform-example-module
-  description: Example Terraform Module Scaffolding
+  name: terraform-github-repository
+  description: Terraform Module to provision a GitHub Repository
   homepage: https://cloudposse.com/accelerate
-  topics: ""
-
-
-
-
-
+  topics:
+    - terraform
+    - github
+    - repository
+    - automation
+    - automation-as-code
+    - ci/cd
