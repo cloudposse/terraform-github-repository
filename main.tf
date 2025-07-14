@@ -306,8 +306,6 @@ data "github_team" "ruleset_rules_teams" {
   slug = each.value
 }
 
-
-
 resource "github_repository_ruleset" "default" {
   for_each = local.rulesets
 

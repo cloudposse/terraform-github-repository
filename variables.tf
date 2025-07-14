@@ -1,9 +1,9 @@
 variable "repository" {
   type        = object({
     name                        = string
-    description                 = optional(string, "Terraform acceptance tests")
+    description                 = optional(string, null)
     visibility                  = optional(string, "public")
-    homepage_url                = optional(string, "http://example.com/")
+    homepage_url                = optional(string, null)
     archived                    = optional(bool, false)
     has_issues                  = optional(bool, false)
     has_projects                = optional(bool, false)
@@ -22,8 +22,8 @@ variable "repository" {
     default_branch              = optional(string, "main")
     web_commit_signoff_required = optional(bool, false)
     topics                      = optional(list(string), [])
-    license_template            = optional(string, "mit")
-    gitignore_template          = optional(string, "Terraform")
+    license_template            = optional(string, null)
+    gitignore_template          = optional(string, null)
     auto_init                   = optional(bool, false)
     ignore_vulnerability_alerts_during_read = optional(bool, false)
     allow_update_branch         = optional(bool, false)
