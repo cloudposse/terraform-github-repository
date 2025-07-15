@@ -1,52 +1,54 @@
 resource "github_repository" "default" {
   count = module.this.enabled ? 1 : 0
 
-  name        = var.repository.name
-  description = var.repository.description
-  visibility  = var.repository.visibility
+  name        = module.this.id
+  description = var.description
+  visibility  = var.visibility
 
-  homepage_url = var.repository.homepage_url
-  topics       = var.repository.topics
+  homepage_url = var.homepage_url
+  topics       = var.topics
 
-  archived           = var.repository.archived
+  archived           = var.archived
   archive_on_destroy = var.archive_on_destroy
 
-  is_template = var.repository.is_template
+  is_template = var.is_template
 
-  has_discussions = var.repository.has_discussions
-  has_downloads   = var.repository.has_downloads
-  has_issues      = var.repository.has_issues
-  has_projects    = var.repository.has_projects
-  has_wiki        = var.repository.has_wiki
+  has_discussions = var.has_discussions
+  has_downloads   = var.has_downloads
+  has_issues      = var.has_issues
+  has_projects    = var.has_projects
+  has_wiki        = var.has_wiki
 
-  allow_squash_merge = var.repository.allow_squash_merge
-  allow_merge_commit = var.repository.allow_merge_commit
-  allow_rebase_merge = var.repository.allow_rebase_merge
+  allow_squash_merge = var.allow_squash_merge
+  allow_merge_commit = var.allow_merge_commit
+  allow_rebase_merge = var.allow_rebase_merge
 
-  squash_merge_commit_title   = var.repository.squash_merge_commit_title
-  squash_merge_commit_message = var.repository.squash_merge_commit_message
+  squash_merge_commit_title   = var.squash_merge_commit_title
+  squash_merge_commit_message = var.squash_merge_commit_message
 
-  merge_commit_title   = var.repository.merge_commit_title
-  merge_commit_message = var.repository.merge_commit_message
+  allow_auto_merge = var.allow_auto_merge
 
-  allow_update_branch    = var.repository.allow_update_branch
-  delete_branch_on_merge = var.repository.delete_branch_on_merge
+  merge_commit_title   = var.merge_commit_title
+  merge_commit_message = var.merge_commit_message
 
-  auto_init          = var.repository.auto_init
-  gitignore_template = var.repository.gitignore_template
-  license_template   = var.repository.license_template
+  allow_update_branch    = var.allow_update_branch
+  delete_branch_on_merge = var.delete_branch_on_merge
 
-  web_commit_signoff_required = var.repository.web_commit_signoff_required
+  auto_init          = var.auto_init
+  gitignore_template = var.gitignore_template
+  license_template   = var.license_template
 
-  vulnerability_alerts = var.repository.visibility != "public" ? var.repository.enable_vulnerability_alerts : true
+  web_commit_signoff_required = var.web_commit_signoff_required
 
-  ignore_vulnerability_alerts_during_read = var.repository.ignore_vulnerability_alerts_during_read
+  vulnerability_alerts = var.visibility != "public" ? var.enable_vulnerability_alerts : true
+
+  ignore_vulnerability_alerts_during_read = var.ignore_vulnerability_alerts_during_read
 
   dynamic "security_and_analysis" {
-    for_each = var.repository.security_and_analysis != null ? [var.repository.security_and_analysis] : []
+    for_each = var.security_and_analysis != null ? [var.security_and_analysis] : []
     content {
       dynamic "advanced_security" {
-        for_each = var.repository.visibility != "public" ? [security_and_analysis.value.advanced_security] : []
+        for_each = var.visibility != "public" ? [security_and_analysis.value.advanced_security] : []
         content {
           status = security_and_analysis.value.advanced_security ? "enabled" : "disabled"
         }
@@ -62,10 +64,10 @@ resource "github_repository" "default" {
 }
 
 resource "github_branch_default" "default" {
-  count = var.repository != null ? 1 : 0
+  count = module.this.enabled ? 1 : 0
 
   repository = join("", github_repository.default[*].name)
-  branch     = var.repository.default_branch
+  branch     = var.default_branch
 
   depends_on = [
     github_repository.default

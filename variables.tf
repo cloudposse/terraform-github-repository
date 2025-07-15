@@ -1,64 +1,204 @@
-variable "repository" {
-  description = "Repository configuration"
-  type = object({
-    name                                    = string
-    description                             = optional(string, null)
-    visibility                              = optional(string, "public")
-    homepage_url                            = optional(string, null)
-    archived                                = optional(bool, false)
-    has_issues                              = optional(bool, false)
-    has_projects                            = optional(bool, false)
-    has_discussions                         = optional(bool, false)
-    has_wiki                                = optional(bool, false)
-    has_downloads                           = optional(bool, false)
-    is_template                             = optional(bool, false)
-    allow_squash_merge                      = optional(bool, false)
-    squash_merge_commit_title               = optional(string, "PR_TITLE")
-    squash_merge_commit_message             = optional(string, "COMMIT_MESSAGE")
-    allow_merge_commit                      = optional(bool, false)
-    merge_commit_title                      = optional(string, "MERGE_MESSAGE")
-    merge_commit_message                    = optional(string, "BLANK")
-    allow_rebase_merge                      = optional(bool, false)
-    delete_branch_on_merge                  = optional(bool, false)
-    default_branch                          = optional(string, "main")
-    web_commit_signoff_required             = optional(bool, false)
-    topics                                  = optional(list(string), [])
-    license_template                        = optional(string, null)
-    gitignore_template                      = optional(string, null)
-    auto_init                               = optional(bool, false)
-    ignore_vulnerability_alerts_during_read = optional(bool, false)
-    allow_update_branch                     = optional(bool, false)
-    security_and_analysis = optional(object({
-      advanced_security               = bool
-      secret_scanning                 = bool
-      secret_scanning_push_protection = bool
-    }), null)
-  })
+variable "description" {
+  description = "Description of the repository"
+  type        = string
+  default     = null
+}
+
+variable "visibility" {
+  description = "Visibility of the repository. Must be public, private, or internal."
+  type        = string
+  default     = "public"
 
   validation {
-    condition     = try(contains(["public", "private", "internal"], var.repository.visibility), true)
+    condition     = contains(["public", "private", "internal"], var.visibility)
     error_message = "Repository visibility must be public, private or internal"
   }
+}
+
+variable "homepage_url" {
+  description = "Homepage URL of the repository"
+  type        = string
+  default     = null
+}
+
+variable "archived" {
+  description = "Whether the repository is archived"
+  type        = bool
+  default     = false
+}
+
+variable "has_issues" {
+  description = "Whether the repository has issues enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_projects" {
+  description = "Whether the repository has projects enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_discussions" {
+  description = "Whether the repository has discussions enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_wiki" {
+  description = "Whether the repository has wiki enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_downloads" {
+  description = "Whether the repository has downloads enabled"
+  type        = bool
+  default     = false
+}
+
+variable "is_template" {
+  description = "Whether the repository is a template"
+  type        = bool
+  default     = false
+}
+
+variable "allow_auto_merge" {
+  description = "Allow auto merge"
+  type        = bool
+  default     = false
+}
+
+variable "allow_squash_merge" {
+  description = "Allow squash merge"
+  type        = bool
+  default     = false
+}
+
+variable "squash_merge_commit_title" {
+  description = "Squash merge commit title. Must be PR_TITLE or COMMIT_OR_PR_TITLE."
+  type        = string
+  default     = "PR_TITLE"
 
   validation {
-    condition     = try(contains(["PR_TITLE", "COMMIT_OR_PR_TITLE"], var.repository.squash_merge_commit_title), true)
+    condition     = contains(["PR_TITLE", "COMMIT_OR_PR_TITLE"], var.squash_merge_commit_title)
     error_message = "Repository squash merge commit title must be PR_TITLE, COMMIT_OR_PR_TITLE"
   }
+}
+
+variable "squash_merge_commit_message" {
+  description = "Squash merge commit message. Must be PR_BODY, COMMIT_MESSAGES or BLANK."
+  type        = string
+  default     = "COMMIT_MESSAGE"
 
   validation {
-    condition     = try(contains(["PR_BODY", "COMMIT_MESSAGES", "BLANK"], var.repository.squash_merge_commit_message), true)
+    condition     = contains(["PR_BODY", "COMMIT_MESSAGES", "BLANK"], var.squash_merge_commit_message)
     error_message = "Repository squash merge commit message must be PR_BODY, COMMIT_MESSAGES or BLANK"
   }
+}
+
+variable "allow_merge_commit" {
+  description = "Allow merge commit"
+  type        = bool
+  default     = false
+}
+
+variable "merge_commit_title" {
+  description = "Merge commit title. Must be PR_TITLE or MERGE_MESSAGE."
+  type        = string
+  default     = "MERGE_MESSAGE"
 
   validation {
-    condition     = try(contains(["PR_TITLE", "MERGE_MESSAGE"], var.repository.merge_commit_title), true)
+    condition     = contains(["PR_TITLE", "MERGE_MESSAGE"], var.merge_commit_title)
     error_message = "Repository merge commit title must be PR_TITLE, MERGE_MESSAGE"
   }
+}
+
+variable "merge_commit_message" {
+  description = "Merge commit message. Must be PR_BODY, PR_TITLE or BLANK."
+  type        = string
+  default     = "BLANK"
 
   validation {
-    condition     = try(contains(["PR_BODY", "PR_TITLE", "BLANK"], var.repository.merge_commit_message), true)
+    condition     = contains(["PR_BODY", "PR_TITLE", "BLANK"], var.merge_commit_message)
     error_message = "Repository merge commit message must be PR_BODY, PR_TITLE or BLANK"
   }
+}
+
+variable "allow_rebase_merge" {
+  description = "Allow rebase merge"
+  type        = bool
+  default     = false
+}
+
+variable "delete_branch_on_merge" {
+  description = "Delete branch on merge"
+  type        = bool
+  default     = false
+}
+
+variable "default_branch" {
+  description = "Default branch name"
+  type        = string
+  default     = "main"
+}
+
+variable "web_commit_signoff_required" {
+  description = "Require signoff on web commits"
+  type        = bool
+  default     = false
+}
+
+variable "topics" {
+  description = "List of repository topics"
+  type        = list(string)
+  default     = []
+}
+
+variable "license_template" {
+  description = "License template"
+  type        = string
+  default     = null
+}
+
+variable "gitignore_template" {
+  description = "Gitignore template"
+  type        = string
+  default     = null
+}
+
+variable "auto_init" {
+  description = "Auto-initialize the repository"
+  type        = bool
+  default     = false
+}
+
+variable "ignore_vulnerability_alerts_during_read" {
+  description = "Ignore vulnerability alerts during read"
+  type        = bool
+  default     = false
+}
+
+variable "enable_vulnerability_alerts" {
+  description = "Enable vulnerability alerts"
+  type        = bool
+  default     = true
+}
+
+variable "allow_update_branch" {
+  description = "Allow updating the branch"
+  type        = bool
+  default     = false
+}
+
+variable "security_and_analysis" {
+  description = "Security and analysis settings"
+  type = object({
+    advanced_security               = bool
+    secret_scanning                 = bool
+    secret_scanning_push_protection = bool
+  })
+  default = null
 }
 
 variable "archive_on_destroy" {

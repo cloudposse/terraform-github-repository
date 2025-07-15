@@ -1,47 +1,215 @@
 variable "owner" {
-  description = "GitHub owner user or organization"
+  description = "Owner of the repository"
   type        = string
 }
 
-variable "repository" {
-  description = "Repository configuration"
+variable "description" {
+  description = "Description of the repository"
+  type        = string
+  default     = null
+}
+
+variable "visibility" {
+  description = "Visibility of the repository. Must be public, private, or internal."
+  type        = string
+  default     = "public"
+
+  validation {
+    condition     = contains(["public", "private", "internal"], var.visibility)
+    error_message = "Repository visibility must be public, private or internal"
+  }
+}
+
+variable "homepage_url" {
+  description = "Homepage URL of the repository"
+  type        = string
+  default     = null
+}
+
+variable "archived" {
+  description = "Whether the repository is archived"
+  type        = bool
+  default     = false
+}
+
+variable "has_issues" {
+  description = "Whether the repository has issues enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_projects" {
+  description = "Whether the repository has projects enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_discussions" {
+  description = "Whether the repository has discussions enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_wiki" {
+  description = "Whether the repository has wiki enabled"
+  type        = bool
+  default     = false
+}
+
+variable "has_downloads" {
+  description = "Whether the repository has downloads enabled"
+  type        = bool
+  default     = false
+}
+
+variable "is_template" {
+  description = "Whether the repository is a template"
+  type        = bool
+  default     = false
+}
+
+variable "allow_squash_merge" {
+  description = "Allow squash merge"
+  type        = bool
+  default     = false
+}
+
+variable "squash_merge_commit_title" {
+  description = "Squash merge commit title. Must be PR_TITLE or COMMIT_OR_PR_TITLE."
+  type        = string
+  default     = "PR_TITLE"
+
+  validation {
+    condition     = contains(["PR_TITLE", "COMMIT_OR_PR_TITLE"], var.squash_merge_commit_title)
+    error_message = "Repository squash merge commit title must be PR_TITLE, COMMIT_OR_PR_TITLE"
+  }
+}
+
+variable "squash_merge_commit_message" {
+  description = "Squash merge commit message. Must be PR_BODY, COMMIT_MESSAGES or BLANK."
+  type        = string
+  default     = "COMMIT_MESSAGES"
+
+  validation {
+    condition     = contains(["PR_BODY", "COMMIT_MESSAGES", "BLANK"], var.squash_merge_commit_message)
+    error_message = "Repository squash merge commit message must be PR_BODY, COMMIT_MESSAGES or BLANK"
+  }
+}
+
+variable "allow_merge_commit" {
+  description = "Allow merge commit"
+  type        = bool
+  default     = false
+}
+
+variable "merge_commit_title" {
+  description = "Merge commit title. Must be PR_TITLE or MERGE_MESSAGE."
+  type        = string
+  default     = "MERGE_MESSAGE"
+
+  validation {
+    condition     = contains(["PR_TITLE", "MERGE_MESSAGE"], var.merge_commit_title)
+    error_message = "Repository merge commit title must be PR_TITLE, MERGE_MESSAGE"
+  }
+}
+
+variable "merge_commit_message" {
+  description = "Merge commit message. Must be PR_BODY, PR_TITLE or BLANK."
+  type        = string
+  default     = "BLANK"
+
+  validation {
+    condition     = contains(["PR_BODY", "PR_TITLE", "BLANK"], var.merge_commit_message)
+    error_message = "Repository merge commit message must be PR_BODY, PR_TITLE or BLANK"
+  }
+}
+
+variable "allow_auto_merge" {
+  description = "Allow auto merge"
+  type        = bool
+  default     = false
+}
+
+variable "allow_rebase_merge" {
+  description = "Allow rebase merge"
+  type        = bool
+  default     = false
+}
+
+variable "delete_branch_on_merge" {
+  description = "Delete branch on merge"
+  type        = bool
+  default     = false
+}
+
+variable "default_branch" {
+  description = "Default branch name"
+  type        = string
+  default     = "main"
+}
+
+variable "web_commit_signoff_required" {
+  description = "Require signoff on web commits"
+  type        = bool
+  default     = false
+}
+
+variable "topics" {
+  description = "List of repository topics"
+  type        = list(string)
+  default     = []
+}
+
+variable "license_template" {
+  description = "License template"
+  type        = string
+  default     = null
+}
+
+variable "gitignore_template" {
+  description = "Gitignore template"
+  type        = string
+  default     = null
+}
+
+variable "auto_init" {
+  description = "Auto-initialize the repository"
+  type        = bool
+  default     = false
+}
+
+variable "ignore_vulnerability_alerts_during_read" {
+  description = "Ignore vulnerability alerts during read"
+  type        = bool
+  default     = false
+}
+
+variable "enable_vulnerability_alerts" {
+  description = "Enable vulnerability alerts"
+  type        = bool
+  default     = true
+}
+
+variable "allow_update_branch" {
+  description = "Allow updating the branch"
+  type        = bool
+  default     = false
+}
+
+variable "security_and_analysis" {
+  description = "Security and analysis settings"
   type = object({
-    name                                    = string
-    description                             = optional(string, "Terraform acceptance tests")
-    visibility                              = optional(string, "public")
-    homepage_url                            = optional(string, "http://example.com/")
-    archived                                = optional(bool, false)
-    has_issues                              = optional(bool, false)
-    has_projects                            = optional(bool, false)
-    has_discussions                         = optional(bool, false)
-    has_wiki                                = optional(bool, false)
-    has_downloads                           = optional(bool, false)
-    is_template                             = optional(bool, false)
-    allow_squash_merge                      = optional(bool, false)
-    squash_merge_commit_title               = optional(string, "PR_TITLE")
-    squash_merge_commit_message             = optional(string, "COMMIT_MESSAGE")
-    allow_merge_commit                      = optional(bool, false)
-    merge_commit_title                      = optional(string, "MERGE_MESSAGE")
-    merge_commit_message                    = optional(string, "BLANK")
-    allow_rebase_merge                      = optional(bool, false)
-    delete_branch_on_merge                  = optional(bool, false)
-    default_branch                          = optional(string, "main")
-    web_commit_signoff_required             = optional(bool, false)
-    topics                                  = optional(list(string), [])
-    license_template                        = optional(string, "mit")
-    gitignore_template                      = optional(string, "Terraform")
-    auto_init                               = optional(bool, false)
-    archive_on_destroy                      = optional(bool, false)
-    vulnerability_alerts                    = optional(bool, false)
-    ignore_vulnerability_alerts_during_read = optional(bool, false)
-    allow_update_branch                     = optional(bool, false)
-    security_and_analysis = optional(object({
-      advanced_security               = bool
-      secret_scanning                 = bool
-      secret_scanning_push_protection = bool
-    }), null)
+    advanced_security               = bool
+    secret_scanning                 = bool
+    secret_scanning_push_protection = bool
   })
   default = null
+}
+
+variable "archive_on_destroy" {
+  description = "Archive the repository on destroy"
+  type        = bool
+  default     = false
 }
 
 variable "autolink_references" {
@@ -49,14 +217,20 @@ variable "autolink_references" {
   type = map(object({
     key_prefix          = string
     target_url_template = string
+    is_alphanumeric     = optional(bool, false)
   }))
-  default = {}
-}
+  default  = {}
+  nullable = false
 
-variable "archive_on_destroy" {
-  description = "Archive the repository on destroy"
-  type        = bool
-  default     = false
+  validation {
+    condition     = alltrue([for k, v in var.autolink_references : can(regex("^http(s)?://", v.target_url_template))])
+    error_message = "Autolink reference target URL template must start with http:// or https://"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.autolink_references : can(strcontains(v.key_prefix, "<num>"))])
+    error_message = "Autolink reference key prefix must contain <num>"
+  }
 }
 
 variable "custom_properties" {
@@ -67,11 +241,17 @@ variable "custom_properties" {
     single_select = optional(string, null)
     multi_select  = optional(list(string), null)
   }))
-  default = null
+  default  = {}
+  nullable = false
+
+  validation {
+    condition     = alltrue([for k, v in var.custom_properties : length([for n, i in v : n if i != null]) == 1])
+    error_message = "Custom property must have only one of the following: string, boolean, single_select, multi_select"
+  }
 }
 
 variable "environments" {
-  description = "Environments for the repository"
+  description = "Environments for the repository. Enviroment secrets should be encrypted using the GitHub public key in Base64 format if prefixed with nacl:. Read more: https://docs.github.com/en/actions/security-for-github-actions/encrypted-secrets"
   type = map(object({
     wait_timer          = optional(number, 0)
     can_admins_bypass   = optional(bool, false)
@@ -90,19 +270,60 @@ variable "environments" {
     variables = optional(map(string), null)
     secrets   = optional(map(string), null)
   }))
-  default = null
+  default   = {}
+  sensitive = true
+  nullable  = false
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(length(v.reviewers.teams) <= 6, true)])
+    error_message = "Environment reviewers can not have more than 6 teams"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(length(v.reviewers.users) <= 6, true)])
+    error_message = "Environment reviewers can not have more than 6 users"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(v.deployment_branch_policy.protected_branches == true || v.deployment_branch_policy.custom_branches != null, true)])
+    error_message = "Environment deployment branch policy should have protected_branches set to true or custom_branches specified"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(alltrue([for k, v in v.variables : can(regex("^[a-zA-Z0-9_]+$", k))]), true)])
+    error_message = "Environment variables must be alphanumeric and underscores only, can not start with a number"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(alltrue([for k, v in v.secrets : can(regex("^[a-zA-Z0-9_]+$", k))]), true)])
+    error_message = "Environment secrets must be alphanumeric and underscores only, can not start with a number"
+  }
 }
+
 
 variable "variables" {
   description = "Environment variables for the repository"
   type        = map(string)
   default     = {}
+  nullable    = false
+
+  validation {
+    condition     = var.variables == null || alltrue([for k, v in var.variables : can(regex("^[a-zA-Z0-9_]+$", k))])
+    error_message = "Variable names must be alphanumeric and underscores only, can not start with a number"
+  }
 }
 
 variable "secrets" {
-  description = "Secrets for the repository"
+  description = "Secrets for the repository (if prefixed with nacl: it should be encrypted value using the GitHub public key in Base64 format. Read more: https://docs.github.com/en/actions/security-for-github-actions/encrypted-secrets)"
   type        = map(string)
   default     = {}
+  sensitive   = true
+  nullable    = false
+
+  validation {
+    condition     = var.secrets == null || alltrue([for k, v in var.secrets : can(regex("^[a-zA-Z0-9_]+$", k))])
+    error_message = "Secret names must be alphanumeric and underscores only, can not start with a number"
+  }
 }
 
 variable "deploy_keys" {
@@ -112,7 +333,8 @@ variable "deploy_keys" {
     key       = string
     read_only = optional(bool, false)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 // https://docs.github.com/en/webhooks/webhook-events-and-payloads
@@ -126,7 +348,18 @@ variable "webhooks" {
     insecure_ssl = optional(bool, false)
     secret       = optional(string, null)
   }))
-  default = {}
+  default  = {}
+  nullable = false
+
+  validation {
+    condition     = alltrue([for k, v in var.webhooks : can(regex("^http(s)?://", v.url))])
+    error_message = "Webhook URL must start with http:// or https://"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.webhooks : contains(["json", "form"], v.content_type)])
+    error_message = "Webhook content type must be json or form"
+  }
 }
 
 variable "labels" {
@@ -135,19 +368,22 @@ variable "labels" {
     color       = string
     description = string
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "teams" {
   description = "A map of teams and their permissions for the repository"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "users" {
   description = "A map of users and their permissions for the repository"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "rulesets" {
@@ -182,6 +418,13 @@ variable "rulesets" {
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
+      creation         = optional(bool, false),
+      deletion         = optional(bool, false),
+      non_fast_forward = optional(bool, false),
+      required_pull_request_reviews = optional(object({
+        dismiss_stale_reviews           = bool
+        required_approving_review_count = number
+      }), null),
       commit_message_pattern = optional(object({
         operator = string // starts_with, ends_with, contains, equals
         pattern  = string
@@ -194,9 +437,6 @@ variable "rulesets" {
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      creation         = optional(bool, false),
-      deletion         = optional(bool, false),
-      non_fast_forward = optional(bool, false),
       merge_queue = optional(object({
         check_response_timeout_minutes    = optional(number, 60)
         grouping_strategy                 = string // ALLGREEN, HEADGREEN
