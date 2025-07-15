@@ -36,27 +36,27 @@ variable "repository" {
   })
 
   validation {
-    condition     = contains(["public", "private", "internal"], var.repository.visibility)
+    condition     = try(contains(["public", "private", "internal"], var.repository.visibility), true)
     error_message = "Repository visibility must be public, private or internal"
   }
 
   validation {
-    condition     = contains(["PR_TITLE", "COMMIT_OR_PR_TITLE"], var.repository.squash_merge_commit_title)
+    condition     = try(contains(["PR_TITLE", "COMMIT_OR_PR_TITLE"], var.repository.squash_merge_commit_title), true)
     error_message = "Repository squash merge commit title must be PR_TITLE, COMMIT_OR_PR_TITLE"
   }
 
   validation {
-    condition     = contains(["PR_BODY", "COMMIT_MESSAGES", "BLANK"], var.repository.squash_merge_commit_message)
+    condition     = try(contains(["PR_BODY", "COMMIT_MESSAGES", "BLANK"], var.repository.squash_merge_commit_message), true)
     error_message = "Repository squash merge commit message must be PR_BODY, COMMIT_MESSAGES or BLANK"
   }
 
   validation {
-    condition     = contains(["PR_TITLE", "MERGE_MESSAGE"], var.repository.merge_commit_title)
+    condition     = try(contains(["PR_TITLE", "MERGE_MESSAGE"], var.repository.merge_commit_title), true)
     error_message = "Repository merge commit title must be PR_TITLE, MERGE_MESSAGE"
   }
 
   validation {
-    condition     = contains(["PR_BODY", "PR_TITLE", "BLANK"], var.repository.merge_commit_message)
+    condition     = try(contains(["PR_BODY", "PR_TITLE", "BLANK"], var.repository.merge_commit_message), true)
     error_message = "Repository merge commit message must be PR_BODY, PR_TITLE or BLANK"
   }
 }
