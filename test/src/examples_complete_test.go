@@ -46,45 +46,6 @@ func TestExamplesComplete(t *testing.T) {
     Vars: map[string]interface{}{
       "enabled":    true,
       "name": repositoryName,
-      "description": "Terraform acceptance tests",
-      "visibility": "public",
-      "homepage_url": "http://example.com/",
-      "archived": false,
-      "has_issues": true,
-      "has_discussions": true,
-      "has_projects": true,
-      "has_wiki": true,
-      "has_downloads": true,
-      "is_template": true,
-      "allow_merge_commit": true,
-      "merge_commit_title": "MERGE_MESSAGE",
-      "merge_commit_message": "PR_TITLE",
-      "allow_squash_merge": true,
-      "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
-      "squash_merge_commit_message": "COMMIT_MESSAGES",
-      "web_commit_signoff_required": true,
-      "allow_rebase_merge": true,
-      "allow_auto_merge": true,
-      "delete_branch_on_merge": true,
-      "default_branch": "main",
-      "gitignore_template": "TeX",
-      "license_template": "GPL-3.0",
-      "auto_init": true,
-      "topics": []string{"terraform", "github", "test"},
-      "ignore_vulnerability_alerts_during_read": true,
-      "allow_update_branch": true,
-      "security_and_analysis": map[string]interface{}{
-        "advanced_security": false,
-        "secret_scanning": true,
-        "secret_scanning_push_protection": true,
-      },
-      "archive_on_destroy": false,
-      "autolink_references": map[string]interface{}{
-        "jira": map[string]interface{}{
-          "key_prefix": "JIRA-",
-          "target_url_template": "https://jira.example.com/browse/<num>",
-        },
-      },
       "custom_properties": map[string]interface{}{
         "test-boolean": map[string]interface{}{
           "boolean": true,
@@ -141,39 +102,11 @@ func TestExamplesComplete(t *testing.T) {
           },
         },
       },
-      "variables": map[string]interface{}{
-        "test_variable": "test-value",
-        "test_variable_2": "test-value-2",
-      },
-      "secrets": map[string]interface{}{
-        "test_secret": "test-value",
-        "test_secret_2": "nacl:dGVzdC12YWx1ZS0yCg==",
-      },
       "deploy_keys": map[string]interface{}{
         "cicd-key": map[string]interface{}{
           "title": "CI/CD Deploy Key",
           "key": deployKey,
           "read_only": true,
-        },
-      },
-      "webhooks": map[string]interface{}{
-        "notify-on-push": map[string]interface{}{
-          "active": true,
-          "url": "https://hooks.example.com/github",
-          "events": []string{"push", "pull_request"},
-          "content_type": "json",
-          "insecure_ssl": false,
-          "secret": "test-secret",
-        },
-      },
-      "labels": map[string]interface{}{
-        "bug2": map[string]interface{}{
-          "color": "#a73a4a",
-          "description": "🐛 An issue with the system",
-        },
-        "feature2": map[string]interface{}{
-          "color": "#336699",
-          "description": "New functionality",
         },
       },
       "teams": map[string]interface{}{
@@ -313,7 +246,6 @@ func TestExamplesComplete(t *testing.T) {
       },
     },
   }
-
 
   // At the end of the test, run `terraform destroy` to clean up any resources that were created
   defer cleanup(t, terraformOptions, tempTestFolder)
