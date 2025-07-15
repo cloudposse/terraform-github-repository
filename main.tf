@@ -1,9 +1,9 @@
 resource "github_repository" "default" {
-  count        = module.this.enabled ? 1 : 0
+  count = module.this.enabled ? 1 : 0
 
-  name         = var.repository.name
-  description  = var.repository.description
-  visibility   = var.repository.visibility
+  name        = var.repository.name
+  description = var.repository.description
+  visibility  = var.repository.visibility
 
   homepage_url = var.repository.homepage_url
   topics       = var.repository.topics
@@ -14,10 +14,10 @@ resource "github_repository" "default" {
   is_template = var.repository.is_template
 
   has_discussions = var.repository.has_discussions
-  has_downloads = var.repository.has_downloads
-  has_issues = var.repository.has_issues
-  has_projects = var.repository.has_projects
-  has_wiki = var.repository.has_wiki
+  has_downloads   = var.repository.has_downloads
+  has_issues      = var.repository.has_issues
+  has_projects    = var.repository.has_projects
+  has_wiki        = var.repository.has_wiki
 
   allow_squash_merge = var.repository.allow_squash_merge
   allow_merge_commit = var.repository.allow_merge_commit
@@ -76,9 +76,9 @@ resource "github_repository_autolink_reference" "default" {
 resource "github_repository_custom_property" "default" {
   for_each = module.this.enabled ? var.custom_properties : {}
 
-  repository     = join("", github_repository.default[*].name)
-  property_name  = each.key
-  property_type  = coalesce(
+  repository    = join("", github_repository.default[*].name)
+  property_name = each.key
+  property_type = coalesce(
     each.value.string != null ? "string" :
     each.value.boolean != null ? "true_false" :
     each.value.single_select != null ? "single_select" :
@@ -139,7 +139,7 @@ resource "github_repository_environment" "default" {
     for_each = local.environment_deployment_branch_policies[each.key]
     content {
       protected_branches     = deployment_branch_policy.value.protected_branches
-      custom_branch_policies = ! deployment_branch_policy.value.protected_branches
+      custom_branch_policies = !deployment_branch_policy.value.protected_branches
     }
   }
 }
@@ -147,32 +147,32 @@ resource "github_repository_environment" "default" {
 locals {
   environment_variables = merge([
     for e, c in local.environments :
-      c.variables != null ? { for k, v in c.variables : "${e}-${k}" => {"environment": e, "variable_name": k, "variable_value": v} } : {}
+    c.variables != null ? { for k, v in c.variables : "${e}-${k}" => { "environment" : e, "variable_name" : k, "variable_value" : v } } : {}
   ]...)
 
   environment_secrets = merge([
     for e, c in local.environments :
-      c.secrets != null ? { for k, v in c.secrets : "${e}-${k}" => {"environment": e, "secret_name": k, "secret_value": v} } : {}
+    c.secrets != null ? { for k, v in c.secrets : "${e}-${k}" => { "environment" : e, "secret_name" : k, "secret_value" : v } } : {}
   ]...)
 
   environment_deployment_branch_policies = {
     for e, c in local.environments :
-      e => c.deployment_branch_policy != null ? [c.deployment_branch_policy] : []
+    e => c.deployment_branch_policy != null ? [c.deployment_branch_policy] : []
   }
 
   environment_custom_branch_policies = merge([
     for e, c in local.environment_deployment_branch_policies :
-      try(c[0].custom_branches, null) != null ? { "${e}": c[0].custom_branches} : {}
+    try(c[0].custom_branches, null) != null ? { "${e}" : c[0].custom_branches } : {}
   ]...)
 
   environment_tag_patterns = merge([
     for e, c in local.environment_custom_branch_policies :
-      try(c.tags, null) != null ? { for k, v in c.tags : "${e}-${k}" => {"environment": e, "pattern": v} } : {}
+    try(c.tags, null) != null ? { for k, v in c.tags : "${e}-${k}" => { "environment" : e, "pattern" : v } } : {}
   ]...)
 
   environment_branch_patterns = merge([
     for e, c in local.environment_custom_branch_policies :
-      try(c.branches, null) != null ? { for k, v in c.branches : "${e}-${k}" => {"environment": e, "pattern": v} } : {}
+    try(c.branches, null) != null ? { for k, v in c.branches : "${e}-${k}" => { "environment" : e, "pattern" : v } } : {}
   ]...)
 }
 
@@ -187,28 +187,28 @@ resource "github_repository_environment_deployment_policy" "tag_pattern" {
 resource "github_repository_environment_deployment_policy" "branch_pattern" {
   for_each = local.environment_branch_patterns
 
-  repository  = join("", github_repository.default[*].name)
-  environment = github_repository_environment.default[each.value.environment].environment
+  repository     = join("", github_repository.default[*].name)
+  environment    = github_repository_environment.default[each.value.environment].environment
   branch_pattern = each.value.pattern
 }
 
 resource "github_actions_environment_variable" "default" {
   for_each = local.environment_variables
 
-  repository       = join("", github_repository.default[*].name)
-  environment      = github_repository_environment.default[each.value.environment].environment
-  variable_name    = each.value.variable_name
-  value            = each.value.variable_value
+  repository    = join("", github_repository.default[*].name)
+  environment   = github_repository_environment.default[each.value.environment].environment
+  variable_name = each.value.variable_name
+  value         = each.value.variable_value
 }
 
 resource "github_actions_environment_secret" "default" {
   for_each = local.environment_secrets
 
-  repository       = join("", github_repository.default[*].name)
-  environment      = github_repository_environment.default[each.value.environment].environment
-  secret_name      = each.value.secret_name
-  plaintext_value  = ! startswith(each.value.secret_value, "nacl:") ? each.value.secret_value : null
-  encrypted_value  = startswith(each.value.secret_value, "nacl:") ? trimprefix(each.value.secret_value, "nacl:") : null
+  repository      = join("", github_repository.default[*].name)
+  environment     = github_repository_environment.default[each.value.environment].environment
+  secret_name     = each.value.secret_name
+  plaintext_value = !startswith(each.value.secret_value, "nacl:") ? each.value.secret_value : null
+  encrypted_value = startswith(each.value.secret_value, "nacl:") ? trimprefix(each.value.secret_value, "nacl:") : null
 }
 
 locals {
@@ -228,27 +228,27 @@ resource "github_actions_variable" "default" {
 }
 
 resource "github_actions_secret" "default" {
-  for_each      = local.secrets
-  repository    = join("", github_repository.default[*].name)
-  secret_name   = each.key
-  plaintext_value = ! startswith(each.value, "nacl:") ? each.value : null
+  for_each        = local.secrets
+  repository      = join("", github_repository.default[*].name)
+  secret_name     = each.key
+  plaintext_value = !startswith(each.value, "nacl:") ? each.value : null
   encrypted_value = startswith(each.value, "nacl:") ? trimprefix(each.value, "nacl:") : null
 }
 
 resource "github_repository_deploy_key" "default" {
-  for_each      = local.deploy_keys
-  repository    = join("", github_repository.default[*].name)
-  title         = each.value.title
-  key           = each.value.key
-  read_only     = each.value.read_only
+  for_each   = local.deploy_keys
+  repository = join("", github_repository.default[*].name)
+  title      = each.value.title
+  key        = each.value.key
+  read_only  = each.value.read_only
 }
 
 resource "github_repository_webhook" "default" {
-  for_each      = local.webhooks
-  repository    = join("", github_repository.default[*].name)
+  for_each   = local.webhooks
+  repository = join("", github_repository.default[*].name)
 
   active = each.value.active
-  events        = each.value.events
+  events = each.value.events
   configuration {
     url          = each.value.url
     content_type = each.value.content_type
@@ -258,11 +258,11 @@ resource "github_repository_webhook" "default" {
 }
 
 resource "github_issue_label" "default" {
-  for_each      = local.labels
-  repository    = join("", github_repository.default[*].name)
-  name          = each.key
-  color         = trimprefix(each.value.color, "#")
-  description   = each.value.description
+  for_each    = local.labels
+  repository  = join("", github_repository.default[*].name)
+  name        = each.key
+  color       = trimprefix(each.value.color, "#")
+  description = each.value.description
 }
 
 resource "github_repository_collaborators" "default" {
@@ -274,7 +274,7 @@ resource "github_repository_collaborators" "default" {
     for_each = var.teams
     content {
       permission = team.value
-      team_id  = team.key
+      team_id    = team.key
     }
   }
 
@@ -282,7 +282,7 @@ resource "github_repository_collaborators" "default" {
     for_each = var.users
     content {
       permission = user.value
-      username  = user.key
+      username   = user.key
     }
   }
 }
@@ -290,13 +290,13 @@ resource "github_repository_collaborators" "default" {
 locals {
   organization_roles_map = {
     "maintain" = "2"
-    "write" = "4"
-    "admin" = "5"
+    "write"    = "4"
+    "admin"    = "5"
   }
 
   ruleset_rules_teams = flatten([
     for e, c in local.rulesets :
-      c.bypass_actors != null ? compact([for b in c.bypass_actors : b.actor_type == "Team" ? b.actor_id : null]) : []
+    c.bypass_actors != null ? compact([for b in c.bypass_actors : b.actor_type == "Team" ? b.actor_id : null]) : []
   ])
 }
 
@@ -311,9 +311,9 @@ resource "github_repository_ruleset" "default" {
 
   repository = join("", github_repository.default[*].name)
 
-  name = each.value.name
+  name        = each.value.name
   enforcement = each.value.enforcement
-  target = each.value.target
+  target      = each.value.target
 
   conditions {
     ref_name {
@@ -329,7 +329,7 @@ resource "github_repository_ruleset" "default" {
       actor_id = (bypass_actors.value.actor_type == "OrganizationAdmin" ? "0" :
         bypass_actors.value.actor_type == "RepositoryRole" ? local.organization_roles_map[bypass_actors.value.actor_id] :
         bypass_actors.value.actor_type == "Team" ? data.github_team.ruleset_rules_teams[bypass_actors.value.actor_id].id :
-        bypass_actors.value.actor_id)
+      bypass_actors.value.actor_id)
       actor_type = bypass_actors.value.actor_type
     }
   }
@@ -345,48 +345,48 @@ resource "github_repository_ruleset" "default" {
         for_each = rules.value.branch_name_pattern != null ? [rules.value.branch_name_pattern] : []
         content {
           operator = branch_name_pattern.value.operator
-          pattern = branch_name_pattern.value.pattern
-          negate = branch_name_pattern.value.negate
-          name = branch_name_pattern.value.name
+          pattern  = branch_name_pattern.value.pattern
+          negate   = branch_name_pattern.value.negate
+          name     = branch_name_pattern.value.name
         }
       }
       dynamic "commit_author_email_pattern" {
         for_each = rules.value.commit_author_email_pattern != null ? [rules.value.commit_author_email_pattern] : []
         content {
           operator = commit_author_email_pattern.value.operator
-          pattern = commit_author_email_pattern.value.pattern
-          negate = commit_author_email_pattern.value.negate
-          name = commit_author_email_pattern.value.name
+          pattern  = commit_author_email_pattern.value.pattern
+          negate   = commit_author_email_pattern.value.negate
+          name     = commit_author_email_pattern.value.name
         }
       }
       dynamic "commit_message_pattern" {
         for_each = rules.value.commit_message_pattern != null ? [rules.value.commit_message_pattern] : []
         content {
           operator = commit_message_pattern.value.operator
-          pattern = commit_message_pattern.value.pattern
-          negate = commit_message_pattern.value.negate
-          name = commit_message_pattern.value.name
+          pattern  = commit_message_pattern.value.pattern
+          negate   = commit_message_pattern.value.negate
+          name     = commit_message_pattern.value.name
         }
       }
       dynamic "committer_email_pattern" {
         for_each = rules.value.committer_email_pattern != null ? [rules.value.committer_email_pattern] : []
         content {
           operator = committer_email_pattern.value.operator
-          pattern = committer_email_pattern.value.pattern
-          negate = committer_email_pattern.value.negate
-          name = committer_email_pattern.value.name
+          pattern  = committer_email_pattern.value.pattern
+          negate   = committer_email_pattern.value.negate
+          name     = committer_email_pattern.value.name
         }
       }
 
       dynamic "merge_queue" {
         for_each = rules.value.merge_queue != null ? [rules.value.merge_queue] : []
         content {
-          check_response_timeout_minutes = merge_queue.value.check_response_timeout_minutes
-          grouping_strategy = merge_queue.value.grouping_strategy
-          max_entries_to_build = merge_queue.value.max_entries_to_build
-          max_entries_to_merge = merge_queue.value.max_entries_to_merge
-          merge_method = merge_queue.value.merge_method
-          min_entries_to_merge = merge_queue.value.min_entries_to_merge
+          check_response_timeout_minutes    = merge_queue.value.check_response_timeout_minutes
+          grouping_strategy                 = merge_queue.value.grouping_strategy
+          max_entries_to_build              = merge_queue.value.max_entries_to_build
+          max_entries_to_merge              = merge_queue.value.max_entries_to_merge
+          merge_method                      = merge_queue.value.merge_method
+          min_entries_to_merge              = merge_queue.value.min_entries_to_merge
           min_entries_to_merge_wait_minutes = merge_queue.value.min_entries_to_merge_wait_minutes
         }
       }
@@ -394,10 +394,10 @@ resource "github_repository_ruleset" "default" {
       dynamic "pull_request" {
         for_each = rules.value.pull_request != null ? [rules.value.pull_request] : []
         content {
-          dismiss_stale_reviews_on_push = pull_request.value.dismiss_stale_reviews_on_push
-          require_code_owner_review = pull_request.value.require_code_owner_review
-          require_last_push_approval = pull_request.value.require_last_push_approval
-          required_approving_review_count = pull_request.value.required_approving_review_count
+          dismiss_stale_reviews_on_push     = pull_request.value.dismiss_stale_reviews_on_push
+          require_code_owner_review         = pull_request.value.require_code_owner_review
+          require_last_push_approval        = pull_request.value.require_last_push_approval
+          required_approving_review_count   = pull_request.value.required_approving_review_count
           required_review_thread_resolution = pull_request.value.required_review_thread_resolution
         }
       }
@@ -415,12 +415,12 @@ resource "github_repository_ruleset" "default" {
           dynamic "required_check" {
             for_each = required_status_checks.value.required_check
             content {
-              context = required_check.value.context
+              context        = required_check.value.context
               integration_id = required_check.value.integration_id
             }
           }
           strict_required_status_checks_policy = required_status_checks.value.strict_required_status_checks_policy
-          do_not_enforce_on_create = required_status_checks.value.do_not_enforce_on_create
+          do_not_enforce_on_create             = required_status_checks.value.do_not_enforce_on_create
         }
       }
 
@@ -428,9 +428,9 @@ resource "github_repository_ruleset" "default" {
         for_each = rules.value.tag_name_pattern != null ? [rules.value.tag_name_pattern] : []
         content {
           operator = tag_name_pattern.value.operator
-          pattern = tag_name_pattern.value.pattern
-          negate = tag_name_pattern.value.negate
-          name = tag_name_pattern.value.name
+          pattern  = tag_name_pattern.value.pattern
+          negate   = tag_name_pattern.value.negate
+          name     = tag_name_pattern.value.name
         }
       }
 
@@ -440,9 +440,9 @@ resource "github_repository_ruleset" "default" {
           dynamic "required_code_scanning_tool" {
             for_each = required_code_scanning.value.required_code_scanning_tool
             content {
-              alerts_threshold = required_code_scanning_tool.value.alerts_threshold
+              alerts_threshold          = required_code_scanning_tool.value.alerts_threshold
               security_alerts_threshold = required_code_scanning_tool.value.security_alerts_threshold
-              tool = required_code_scanning_tool.value.tool
+              tool                      = required_code_scanning_tool.value.tool
             }
           }
         }
@@ -451,5 +451,5 @@ resource "github_repository_ruleset" "default" {
   }
   depends_on = [
     github_repository_environment.default
-    ]
+  ]
 }

@@ -1,5 +1,5 @@
 module "example" {
-  source = "../.."
+  source  = "../.."
   context = module.this.context
 
   repository          = var.repository
