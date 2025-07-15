@@ -1,8 +1,3 @@
-variable "region" {
-  description = "Region for the repository"
-  type        = string
-}
-
 variable "owner" {
   description = "GitHub owner user or organization"
   type        = string
