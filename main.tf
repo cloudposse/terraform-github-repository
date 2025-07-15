@@ -162,7 +162,7 @@ locals {
 
   environment_custom_branch_policies = merge([
     for e, c in local.environment_deployment_branch_policies :
-    try(c[0].custom_branches, null) != null ? { e : c[0].custom_branches } : {}
+      try(c[0].custom_branches, null) != null ? { format("%s", e) : c[0].custom_branches } : {}
   ]...)
 
   environment_tag_patterns = merge([
