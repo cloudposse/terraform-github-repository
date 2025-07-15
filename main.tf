@@ -182,6 +182,10 @@ resource "github_repository_environment_deployment_policy" "tag_pattern" {
   repository  = join("", github_repository.default[*].name)
   environment = github_repository_environment.default[each.value.environment].environment
   tag_pattern = each.value.pattern
+
+  depends_on = [
+    github_repository_environment.default
+  ]
 }
 
 resource "github_repository_environment_deployment_policy" "branch_pattern" {
@@ -190,6 +194,10 @@ resource "github_repository_environment_deployment_policy" "branch_pattern" {
   repository     = join("", github_repository.default[*].name)
   environment    = github_repository_environment.default[each.value.environment].environment
   branch_pattern = each.value.pattern
+
+  depends_on = [
+    github_repository_environment.default
+  ]
 }
 
 resource "github_actions_environment_variable" "default" {
