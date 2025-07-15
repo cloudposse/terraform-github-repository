@@ -113,7 +113,7 @@ locals {
       reviewers                = try(v.reviewers, null)
       deployment_branch_policy = try(v.deployment_branch_policy, null)
       variables                = try(v.variables, null)
-      secrets                  = { for n, s in coalesce(v.secrets, {}) : n => sensitive(s) }
+      secrets                  = try(v.secrets, null)
     }
   } : {}
 
@@ -235,8 +235,8 @@ resource "github_actions_environment_secret" "default" {
   repository      = join("", github_repository.default[*].name)
   environment     = github_repository_environment.default[each.value.environment].environment
   secret_name     = each.value.secret_name
-  plaintext_value = !startswith(each.value.secret_value, "nacl:") ? each.value.secret_value : null
-  encrypted_value = startswith(each.value.secret_value, "nacl:") ? trimprefix(each.value.secret_value, "nacl:") : null
+  plaintext_value = !startswith(each.value.secret_value, "nacl:") ? sensitive(each.value.secret_value) : null
+  encrypted_value = startswith(each.value.secret_value, "nacl:") ? sensitive(trimprefix(each.value.secret_value, "nacl:")) : null
 }
 
 locals {
