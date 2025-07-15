@@ -72,10 +72,10 @@ variable "autolink_references" {
   type = map(object({
     key_prefix          = string
     target_url_template = string
-    is_alphanumeric    = optional(bool, false)
+    is_alphanumeric     = optional(bool, false)
   }))
-  default = {}
-  nullable  = false
+  default  = {}
+  nullable = false
 
   validation {
     condition     = alltrue([for k, v in var.autolink_references : can(regex("^http(s)?://", v.target_url_template))])
@@ -96,11 +96,11 @@ variable "custom_properties" {
     single_select = optional(string, null)
     multi_select  = optional(list(string), null)
   }))
-  default = {}
-  nullable  = false
+  default  = {}
+  nullable = false
 
   validation {
-    condition     = alltrue([for k, v in var.custom_properties : length([ for n, i in v : n if i != null]) == 1])
+    condition     = alltrue([for k, v in var.custom_properties : length([for n, i in v : n if i != null]) == 1])
     error_message = "Custom property must have only one of the following: string, boolean, single_select, multi_select"
   }
 }
@@ -160,7 +160,7 @@ variable "variables" {
   description = "Environment variables for the repository"
   type        = map(string)
   default     = {}
-  nullable  = false
+  nullable    = false
 
   validation {
     condition     = var.variables == null || alltrue([for k, v in var.variables : can(regex("^[a-zA-Z0-9_]+$", k))])
@@ -173,7 +173,7 @@ variable "secrets" {
   type        = map(string)
   default     = {}
   sensitive   = true
-  nullable  = false
+  nullable    = false
 
   validation {
     condition     = var.secrets == null || alltrue([for k, v in var.secrets : can(regex("^[a-zA-Z0-9_]+$", k))])
@@ -188,8 +188,8 @@ variable "deploy_keys" {
     key       = string
     read_only = optional(bool, false)
   }))
-  default = {}
-  nullable  = false
+  default  = {}
+  nullable = false
 }
 
 // https://docs.github.com/en/webhooks/webhook-events-and-payloads
@@ -203,8 +203,8 @@ variable "webhooks" {
     insecure_ssl = optional(bool, false)
     secret       = optional(string, null)
   }))
-  default = {}
-  nullable  = false
+  default  = {}
+  nullable = false
 
   validation {
     condition     = alltrue([for k, v in var.webhooks : can(regex("^http(s)?://", v.url))])
@@ -223,22 +223,22 @@ variable "labels" {
     color       = string
     description = string
   }))
-  default = {}
-  nullable  = false
+  default  = {}
+  nullable = false
 }
 
 variable "teams" {
   description = "A map of teams and their permissions for the repository"
   type        = map(string)
   default     = {}
-  nullable  = false
+  nullable    = false
 }
 
 variable "users" {
   description = "A map of users and their permissions for the repository"
   type        = map(string)
   default     = {}
-  nullable  = false
+  nullable    = false
 }
 
 variable "rulesets" {

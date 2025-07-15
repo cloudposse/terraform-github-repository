@@ -107,13 +107,13 @@ resource "github_repository_custom_property" "default" {
 locals {
   environments = module.this.enabled ? {
     for k, v in nonsensitive(var.environments) : k => {
-      wait_timer = v.wait_timer
-      can_admins_bypass = v.can_admins_bypass
-      prevent_self_review = v.prevent_self_review
-      reviewers = try(v.reviewers, null)
+      wait_timer               = v.wait_timer
+      can_admins_bypass        = v.can_admins_bypass
+      prevent_self_review      = v.prevent_self_review
+      reviewers                = try(v.reviewers, null)
       deployment_branch_policy = try(v.deployment_branch_policy, null)
-      variables = try(v.variables, null)
-      secrets = { for n, s in coalesce(v.secrets, {}) : n => sensitive(s) }
+      variables                = try(v.variables, null)
+      secrets                  = { for n, s in coalesce(v.secrets, {}) : n => sensitive(s) }
     }
   } : {}
 
