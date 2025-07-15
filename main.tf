@@ -29,7 +29,6 @@ resource "github_repository" "default" {
   merge_commit_title   = var.repository.merge_commit_title
   merge_commit_message = var.repository.merge_commit_message
 
-  default_branch         = var.repository.default_branch
   allow_update_branch    = var.repository.allow_update_branch
   delete_branch_on_merge = var.repository.delete_branch_on_merge
 
@@ -60,6 +59,17 @@ resource "github_repository" "default" {
       }
     }
   }
+}
+
+resource "github_branch_default" "default" {
+  count = var.repository != null ? 1 : 0
+
+  repository = join("", github_repository.default[*].name)
+  branch     = var.repository.default_branch
+
+  depends_on = [
+    github_repository.default
+  ]
 }
 
 resource "github_repository_autolink_reference" "default" {
@@ -95,14 +105,24 @@ resource "github_repository_custom_property" "default" {
 }
 
 locals {
-  environments = module.this.enabled ? var.environments : {}
+  environments = module.this.enabled ? {
+    for k, v in nonsensitive(var.environments) : k => {
+      wait_timer = v.wait_timer
+      can_admins_bypass = v.can_admins_bypass
+      prevent_self_review = v.prevent_self_review
+      reviewers = try(v.reviewers, null)
+      deployment_branch_policy = try(v.deployment_branch_policy, null)
+      variables = try(v.variables, null)
+      secrets = { for n, s in coalesce(v.secrets, {}) : n => sensitive(s) }
+    }
+  } : {}
 
   environment_reviewers_users = flatten([
-    for k, v in local.environments : v.reviewers != null ? v.reviewers.users : []
+    for k, v in local.environments : try(v.reviewers.users, [])
   ])
 
   environment_reviewers_teams = flatten([
-    for k, v in local.environments : v.reviewers != null ? v.reviewers.teams : []
+    for k, v in local.environments : try(v.reviewers.teams, [])
   ])
 }
 
@@ -221,7 +241,7 @@ resource "github_actions_environment_secret" "default" {
 
 locals {
   variables   = module.this.enabled ? var.variables : {}
-  secrets     = module.this.enabled ? var.secrets : {}
+  secrets     = module.this.enabled ? { for k, v in nonsensitive(var.secrets) : k => sensitive(v) } : {}
   deploy_keys = module.this.enabled ? var.deploy_keys : {}
   webhooks    = module.this.enabled ? var.webhooks : {}
   labels      = module.this.enabled ? var.labels : {}
@@ -442,19 +462,20 @@ resource "github_repository_ruleset" "default" {
         }
       }
 
-      dynamic "required_code_scanning" {
-        for_each = rules.value.required_code_scanning != null ? [rules.value.required_code_scanning] : []
-        content {
-          dynamic "required_code_scanning_tool" {
-            for_each = required_code_scanning.value.required_code_scanning_tool
-            content {
-              alerts_threshold          = required_code_scanning_tool.value.alerts_threshold
-              security_alerts_threshold = required_code_scanning_tool.value.security_alerts_threshold
-              tool                      = required_code_scanning_tool.value.tool
-            }
-          }
-        }
-      }
+      # Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
+      # dynamic "required_code_scanning" {
+      #   for_each = rules.value.required_code_scanning != null ? [rules.value.required_code_scanning] : []
+      #   content {
+      #     dynamic "required_code_scanning_tool" {
+      #       for_each = required_code_scanning.value.required_code_scanning_tool
+      #       content {
+      #         alerts_threshold          = required_code_scanning_tool.value.alerts_threshold
+      #         security_alerts_threshold = required_code_scanning_tool.value.security_alerts_threshold
+      #         tool                      = required_code_scanning_tool.value.tool
+      #       }
+      #     }
+      #   }
+      # }
     }
   }
   depends_on = [

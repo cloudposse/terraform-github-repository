@@ -230,13 +230,14 @@ variable "rulesets" {
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      required_code_scanning = optional(object({
-        required_code_scanning_tool = list(object({
-          alerts_threshold          = string // none, errors, errors_and_warnings, all
-          security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
-          tool                      = string
-        }))
-      }), null),
+      // Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
+      # required_code_scanning = optional(object({
+      #   required_code_scanning_tool = list(object({
+      #     alerts_threshold          = string // none, errors, errors_and_warnings, all
+      #     security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
+      #     tool                      = string
+      #   }))
+      # }), null),
     }),
   }))
   default = {}

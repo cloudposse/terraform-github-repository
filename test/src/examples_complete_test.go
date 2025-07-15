@@ -107,7 +107,8 @@ func TestExamplesComplete(t *testing.T) {
           "can_admins_bypass": true,
           "prevent_self_review": true,
           "reviewers": map[string]interface{}{
-            "teams": []string{"test-team"},
+            // Teams are not supported yet
+            //"teams": []string{"test-team"},
             "users": []string{"cloudposse-test-bot"},
           },
           "deployment_branch_policy": map[string]interface{}{
@@ -300,15 +301,15 @@ func TestExamplesComplete(t *testing.T) {
             //   "name": "Tag name",
             //   "negate": false,
             // },
-            "required_code_scanning": map[string]interface{}{
-              "required_code_scanning_tool": []map[string]interface{}{
-                {
-                  "alerts_threshold": "errors",
-                  "security_alerts_threshold": "high_or_higher",
-                  "tool": "CodeQL",
-                },
-              },
-            },
+            // "required_code_scanning": map[string]interface{}{
+            //   "required_code_scanning_tool": []map[string]interface{}{
+            //     {
+            //       "alerts_threshold": "errors",
+            //       "security_alerts_threshold": "high_or_higher",
+            //       "tool": "CodeQL",
+            //     },
+            //   },
+            // },
           },
         },
       },
@@ -667,10 +668,11 @@ func TestExamplesComplete(t *testing.T) {
   // assert.EqualValues(t, false, ruleset.GetRules().GetTagNamePattern().GetNegate(), "Expected default protection to be on branch")
 
 
-  assert.EqualValues(t, 1, len(ruleset.GetRules().GetCodeScanning().CodeScanningTools), "Expected default protection to be on branch")
-  assert.EqualValues(t, "errors", ruleset.GetRules().GetCodeScanning().CodeScanningTools[0].AlertsThreshold, "Expected default protection to be on branch")
-  assert.EqualValues(t, "high_or_higher", ruleset.GetRules().GetCodeScanning().CodeScanningTools[0].SecurityAlertsThreshold, "Expected default protection to be on branch")
-  assert.EqualValues(t, "CodeQL", ruleset.GetRules().GetCodeScanning().CodeScanningTools[0].Tool, "Expected default protection to be on branch")
+  // Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
+  // assert.EqualValues(t, 1, len(ruleset.GetRules().GetCodeScanning().CodeScanningTools), "Expected default protection to be on branch")
+  // assert.EqualValues(t, "errors", ruleset.GetRules().GetCodeScanning().CodeScanningTools[0].AlertsThreshold, "Expected default protection to be on branch")
+  // assert.EqualValues(t, "high_or_higher", ruleset.GetRules().GetCodeScanning().CodeScanningTools[0].SecurityAlertsThreshold, "Expected default protection to be on branch")
+  // assert.EqualValues(t, "CodeQL", ruleset.GetRules().GetCodeScanning().CodeScanningTools[0].Tool, "Expected default protection to be on branch")
 
   // assert.Equal(t, true, repo.GetAutomatedSecurityFixes())
   // assert.Equal(t, true, repo.GetVulnerabilityAlerts())

@@ -34,7 +34,31 @@ variable "repository" {
       secret_scanning_push_protection = bool
     }), null)
   })
-  default = null
+
+  validation {
+    condition     = contains(["public", "private", "internal"], var.repository.visibility)
+    error_message = "Repository visibility must be public, private or internal"
+  }
+
+  validation {
+    condition     = contains(["PR_TITLE", "COMMIT_OR_PR_TITLE"], var.repository.squash_merge_commit_title)
+    error_message = "Repository squash merge commit title must be PR_TITLE, COMMIT_OR_PR_TITLE"
+  }
+
+  validation {
+    condition     = contains(["PR_BODY", "COMMIT_MESSAGES", "BLANK"], var.repository.squash_merge_commit_message)
+    error_message = "Repository squash merge commit message must be PR_BODY, COMMIT_MESSAGES or BLANK"
+  }
+
+  validation {
+    condition     = contains(["PR_TITLE", "MERGE_MESSAGE"], var.repository.merge_commit_title)
+    error_message = "Repository merge commit title must be PR_TITLE, MERGE_MESSAGE"
+  }
+
+  validation {
+    condition     = contains(["PR_BODY", "PR_TITLE", "BLANK"], var.repository.merge_commit_message)
+    error_message = "Repository merge commit message must be PR_BODY, PR_TITLE or BLANK"
+  }
 }
 
 variable "archive_on_destroy" {
@@ -48,8 +72,20 @@ variable "autolink_references" {
   type = map(object({
     key_prefix          = string
     target_url_template = string
+    is_alphanumeric    = optional(bool, false)
   }))
   default = {}
+  nullable  = false
+
+  validation {
+    condition     = alltrue([for k, v in var.autolink_references : can(regex("^http(s)?://", v.target_url_template))])
+    error_message = "Autolink reference target URL template must start with http:// or https://"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.autolink_references : can(strcontains(v.key_prefix, "<num>"))])
+    error_message = "Autolink reference key prefix must contain <num>"
+  }
 }
 
 variable "custom_properties" {
@@ -60,11 +96,17 @@ variable "custom_properties" {
     single_select = optional(string, null)
     multi_select  = optional(list(string), null)
   }))
-  default = null
+  default = {}
+  nullable  = false
+
+  validation {
+    condition     = alltrue([for k, v in var.custom_properties : length([ for n, i in v : n if i != null]) == 1])
+    error_message = "Custom property must have only one of the following: string, boolean, single_select, multi_select"
+  }
 }
 
 variable "environments" {
-  description = "Environments for the repository"
+  description = "Environments for the repository. Enviroment secrets should be encrypted using the GitHub public key in Base64 format if prefixed with nacl:. Read more: https://docs.github.com/en/actions/security-for-github-actions/encrypted-secrets"
   type = map(object({
     wait_timer          = optional(number, 0)
     can_admins_bypass   = optional(bool, false)
@@ -80,23 +122,63 @@ variable "environments" {
         tags     = optional(list(string), null)
       }), null)
     }), null)
-    // TODO: Add validation for the variables names to be alphanumeric and underscores only, can not start with a number
     variables = optional(map(string), null)
     secrets   = optional(map(string), null)
   }))
-  default = null
+  default   = {}
+  sensitive = true
+  nullable  = false
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(length(v.reviewers.teams) <= 6, true)])
+    error_message = "Environment reviewers can not have more than 6 teams"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(length(v.reviewers.users) <= 6, true)])
+    error_message = "Environment reviewers can not have more than 6 users"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(v.deployment_branch_policy.protected_branches == true || v.deployment_branch_policy.custom_branches != null, true)])
+    error_message = "Environment deployment branch policy should have protected_branches set to true or custom_branches specified"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(alltrue([for k, v in v.variables : can(regex("^[a-zA-Z0-9_]+$", k))]), true)])
+    error_message = "Environment variables must be alphanumeric and underscores only, can not start with a number"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.environments : try(alltrue([for k, v in v.secrets : can(regex("^[a-zA-Z0-9_]+$", k))]), true)])
+    error_message = "Environment secrets must be alphanumeric and underscores only, can not start with a number"
+  }
 }
+
 
 variable "variables" {
   description = "Environment variables for the repository"
   type        = map(string)
   default     = {}
+  nullable  = false
+
+  validation {
+    condition     = var.variables == null || alltrue([for k, v in var.variables : can(regex("^[a-zA-Z0-9_]+$", k))])
+    error_message = "Variable names must be alphanumeric and underscores only, can not start with a number"
+  }
 }
 
 variable "secrets" {
-  description = "Secrets for the repository"
+  description = "Secrets for the repository (if prefixed with nacl: it should be encrypted value using the GitHub public key in Base64 format. Read more: https://docs.github.com/en/actions/security-for-github-actions/encrypted-secrets)"
   type        = map(string)
   default     = {}
+  sensitive   = true
+  nullable  = false
+
+  validation {
+    condition     = var.secrets == null || alltrue([for k, v in var.secrets : can(regex("^[a-zA-Z0-9_]+$", k))])
+    error_message = "Secret names must be alphanumeric and underscores only, can not start with a number"
+  }
 }
 
 variable "deploy_keys" {
@@ -107,6 +189,7 @@ variable "deploy_keys" {
     read_only = optional(bool, false)
   }))
   default = {}
+  nullable  = false
 }
 
 // https://docs.github.com/en/webhooks/webhook-events-and-payloads
@@ -121,6 +204,17 @@ variable "webhooks" {
     secret       = optional(string, null)
   }))
   default = {}
+  nullable  = false
+
+  validation {
+    condition     = alltrue([for k, v in var.webhooks : can(regex("^http(s)?://", v.url))])
+    error_message = "Webhook URL must start with http:// or https://"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.webhooks : contains(["json", "form"], v.content_type)])
+    error_message = "Webhook content type must be json or form"
+  }
 }
 
 variable "labels" {
@@ -130,18 +224,21 @@ variable "labels" {
     description = string
   }))
   default = {}
+  nullable  = false
 }
 
 variable "teams" {
   description = "A map of teams and their permissions for the repository"
   type        = map(string)
   default     = {}
+  nullable  = false
 }
 
 variable "users" {
   description = "A map of users and their permissions for the repository"
   type        = map(string)
   default     = {}
+  nullable  = false
 }
 
 variable "rulesets" {
@@ -228,13 +325,14 @@ variable "rulesets" {
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      required_code_scanning = optional(object({
-        required_code_scanning_tool = list(object({
-          alerts_threshold          = string // none, errors, errors_and_warnings, all
-          security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
-          tool                      = string
-        }))
-      }), null),
+      // Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
+      # required_code_scanning = optional(object({
+      #   required_code_scanning_tool = list(object({
+      #     alerts_threshold          = string // none, errors, errors_and_warnings, all
+      #     security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
+      #     tool                      = string
+      #   }))
+      # }), null),
     }),
   }))
   default = {}
