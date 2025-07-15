@@ -147,12 +147,12 @@ resource "github_repository_environment" "default" {
 locals {
   environment_variables = merge([
     for e, c in local.environments :
-    c.variables != null ? { for k, v in c.variables : "${e}-${k}" => { "environment" : e, "variable_name" : k, "variable_value" : v } } : {}
+    c.variables != null ? { for k, v in c.variables : format("%s-%s", e, k) => { "environment" : e, "variable_name" : k, "variable_value" : v } } : {}
   ]...)
 
   environment_secrets = merge([
     for e, c in local.environments :
-    c.secrets != null ? { for k, v in c.secrets : "${e}-${k}" => { "environment" : e, "secret_name" : k, "secret_value" : v } } : {}
+    c.secrets != null ? { for k, v in c.secrets : format("%s-%s", e, k) => { "environment" : e, "secret_name" : k, "secret_value" : v } } : {}
   ]...)
 
   environment_deployment_branch_policies = {
@@ -162,17 +162,17 @@ locals {
 
   environment_custom_branch_policies = merge([
     for e, c in local.environment_deployment_branch_policies :
-    try(c[0].custom_branches, null) != null ? { "${e}" : c[0].custom_branches } : {}
+    try(c[0].custom_branches, null) != null ? { e : c[0].custom_branches } : {}
   ]...)
 
   environment_tag_patterns = merge([
     for e, c in local.environment_custom_branch_policies :
-    try(c.tags, null) != null ? { for k, v in c.tags : "${e}-${k}" => { "environment" : e, "pattern" : v } } : {}
+    try(c.tags, null) != null ? { for k, v in c.tags : format("%s-%s", e, k) => { "environment" : e, "pattern" : v } } : {}
   ]...)
 
   environment_branch_patterns = merge([
     for e, c in local.environment_custom_branch_policies :
-    try(c.branches, null) != null ? { for k, v in c.branches : "${e}-${k}" => { "environment" : e, "pattern" : v } } : {}
+    try(c.branches, null) != null ? { for k, v in c.branches : format("%s-%s", e, k) => { "environment" : e, "pattern" : v } } : {}
   ]...)
 }
 
