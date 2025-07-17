@@ -1,10 +1,10 @@
 
 
 <!-- markdownlint-disable -->
-<a href="https://cpco.io/homepage"><img src="https://github.com/cloudposse/terraform-example-module/blob/main/.github/banner.png?raw=true" alt="Project Banner"/></a><br/>
+<a href="https://cpco.io/homepage"><img src="https://github.com/cloudposse/terraform-github-repository/blob/main/.github/banner.png?raw=true" alt="Project Banner"/></a><br/>
 
 
-<p align="right"><a href="https://github.com/cloudposse/terraform-example-module/releases/latest"><img src="https://img.shields.io/github/release/cloudposse/terraform-example-module.svg?style=for-the-badge" alt="Latest Release"/></a><a href="https://github.com/cloudposse/terraform-example-module/commits"><img src="https://img.shields.io/github/last-commit/cloudposse/terraform-example-module.svg?style=for-the-badge" alt="Last Updated"/></a><a href="https://cloudposse.com/slack"><img src="https://slack.cloudposse.com/for-the-badge.svg" alt="Slack Community"/></a><a href="https://cloudposse.com/support/"><img src="https://img.shields.io/badge/Get_Support-success.svg?style=for-the-badge" alt="Get Support"/></a>
+<p align="right"><a href="https://github.com/cloudposse/terraform-github-repository/releases/latest"><img src="https://img.shields.io/github/release/cloudposse/terraform-github-repository.svg?style=for-the-badge" alt="Latest Release"/></a><a href="https://github.com/cloudposse/terraform-example-module/commits"><img src="https://img.shields.io/github/last-commit/cloudposse/terraform-github-repository.svg?style=for-the-badge" alt="Last Updated"/></a><a href="https://cloudposse.com/slack"><img src="https://slack.cloudposse.com/for-the-badge.svg" alt="Slack Community"/></a><a href="https://cloudposse.com/support/"><img src="https://img.shields.io/badge/Get_Support-success.svg?style=for-the-badge" alt="Get Support"/></a>
 
 </p>
 <!-- markdownlint-restore -->
@@ -30,8 +30,7 @@
 
 -->
 
-Short
-description
+Terraform Module to provision a GitHub Repository with advanced settings.
 
 
 > [!TIP]
@@ -48,7 +47,19 @@ description
 
 ## Introduction
 
-This is an introduction.
+Terraform Module to provision a GitHub Repository with advanced settings:
+
+* Repository
+* Environments
+* Deploy Keys
+* Rulesets
+* Secrets
+* Variables
+* Custom Properties
+* Webhooks
+* Autolink References
+* Labels
+* Collaborators
 
 
 
@@ -57,28 +68,21 @@ This is an introduction.
 
 For a complete example, see [examples/complete](examples/complete).
 
-For automated tests of the complete example using [bats](https://github.com/bats-core/bats-core) and [Terratest](https://github.com/gruntwork-io/terratest)
-(which tests and deploys the example on AWS), see [test](test).
-
 ```hcl
-# Create a standard label resource. See [null-label](https://github.com/cloudposse/terraform-null-label/#terraform-null-label--)
-module "label" {
-  source  = "cloudposse/label/null"
-  # Cloud Posse recommends pinning every module to a specific version, though usually you want to use the current one
-  # version = "x.x.x"
-
-  namespace = "eg"
-  name      = "example"
-}
-
-module "example" {
-  source  = "cloudposse/*****/aws"
+module "github_repository" {
+  source  = "cloudposse/github-repository/github"
   # Cloud Posse recommends pinning every module to a specific version
   # version = "x.x.x"
 
-  example = "Hello world!"
-
-  context = module.label.this
+  name = "my-repository"
+  description = "My repository"
+  visibility = "public"
+  auto_init = true
+  has_issues = true
+  has_projects = true
+  has_wiki = true
+  has_downloads = true
+  is_template = false
 }
 ```
 
@@ -91,9 +95,7 @@ module "example" {
 
 
 
-## Quick Start
 
-Here's how to get started...
 ## Examples
 
 Here is an example of using this module:
@@ -108,13 +110,13 @@ Here is an example of using this module:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.2 |
+| <a name="requirement_github"></a> [github](#requirement\_github) | >= 6.6.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.2 |
+| <a name="provider_github"></a> [github](#provider\_github) | >= 6.6.0 |
 
 ## Modules
 
@@ -126,39 +128,93 @@ Here is an example of using this module:
 
 | Name | Type |
 |------|------|
-| [random_integer.example](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) | resource |
+| [github_actions_environment_secret.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_environment_secret) | resource |
+| [github_actions_environment_variable.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_environment_variable) | resource |
+| [github_actions_secret.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_secret) | resource |
+| [github_actions_variable.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_variable) | resource |
+| [github_branch_default.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/branch_default) | resource |
+| [github_issue_label.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/issue_label) | resource |
+| [github_repository.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository) | resource |
+| [github_repository_autolink_reference.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_autolink_reference) | resource |
+| [github_repository_collaborators.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_collaborators) | resource |
+| [github_repository_custom_property.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_custom_property) | resource |
+| [github_repository_deploy_key.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_deploy_key) | resource |
+| [github_repository_environment.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment) | resource |
+| [github_repository_environment_deployment_policy.branch_pattern](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment_deployment_policy) | resource |
+| [github_repository_environment_deployment_policy.tag_pattern](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment_deployment_policy) | resource |
+| [github_repository_ruleset.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_ruleset) | resource |
+| [github_repository_webhook.default](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_webhook) | resource |
+| [github_team.environment_reviewers](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/team) | data source |
+| [github_team.ruleset_rules_teams](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/team) | data source |
+| [github_user.environment_reviewers](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/user) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_additional_tag_map"></a> [additional\_tag\_map](#input\_additional\_tag\_map) | Additional key-value pairs to add to each map in `tags_as_list_of_maps`. Not added to `tags` or `id`.<br/>This is for some rare cases where resources want additional configuration of tags<br/>and therefore take a list of maps with tag key, value, and additional configuration. | `map(string)` | `{}` | no |
+| <a name="input_allow_auto_merge"></a> [allow\_auto\_merge](#input\_allow\_auto\_merge) | Allow auto merge | `bool` | `false` | no |
+| <a name="input_allow_merge_commit"></a> [allow\_merge\_commit](#input\_allow\_merge\_commit) | Allow merge commit | `bool` | `true` | no |
+| <a name="input_allow_rebase_merge"></a> [allow\_rebase\_merge](#input\_allow\_rebase\_merge) | Allow rebase merge | `bool` | `true` | no |
+| <a name="input_allow_squash_merge"></a> [allow\_squash\_merge](#input\_allow\_squash\_merge) | Allow squash merge | `bool` | `true` | no |
+| <a name="input_allow_update_branch"></a> [allow\_update\_branch](#input\_allow\_update\_branch) | Allow updating the branch | `bool` | `false` | no |
+| <a name="input_archive_on_destroy"></a> [archive\_on\_destroy](#input\_archive\_on\_destroy) | Archive the repository on destroy | `bool` | `false` | no |
+| <a name="input_archived"></a> [archived](#input\_archived) | Whether the repository is archived | `bool` | `false` | no |
 | <a name="input_attributes"></a> [attributes](#input\_attributes) | ID element. Additional attributes (e.g. `workers` or `cluster`) to add to `id`,<br/>in the order they appear in the list. New attributes are appended to the<br/>end of the list. The elements of the list are joined by the `delimiter`<br/>and treated as a single ID element. | `list(string)` | `[]` | no |
+| <a name="input_auto_init"></a> [auto\_init](#input\_auto\_init) | Auto-initialize the repository | `bool` | `false` | no |
+| <a name="input_autolink_references"></a> [autolink\_references](#input\_autolink\_references) | Autolink references | <pre>map(object({<br/>    key_prefix          = string<br/>    target_url_template = string<br/>    is_alphanumeric     = optional(bool, false)<br/>  }))</pre> | `{}` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br/>See description of individual variables for details.<br/>Leave string and numeric variables as `null` to use default value.<br/>Individual variable settings (non-null) override settings in context object,<br/>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br/>  "additional_tag_map": {},<br/>  "attributes": [],<br/>  "delimiter": null,<br/>  "descriptor_formats": {},<br/>  "enabled": true,<br/>  "environment": null,<br/>  "id_length_limit": null,<br/>  "label_key_case": null,<br/>  "label_order": [],<br/>  "label_value_case": null,<br/>  "labels_as_tags": [<br/>    "unset"<br/>  ],<br/>  "name": null,<br/>  "namespace": null,<br/>  "regex_replace_chars": null,<br/>  "stage": null,<br/>  "tags": {},<br/>  "tenant": null<br/>}</pre> | no |
+| <a name="input_custom_properties"></a> [custom\_properties](#input\_custom\_properties) | Custom properties for the repository | <pre>map(object({<br/>    string        = optional(string, null)<br/>    boolean       = optional(bool, null)<br/>    single_select = optional(string, null)<br/>    multi_select  = optional(list(string), null)<br/>  }))</pre> | `{}` | no |
+| <a name="input_default_branch"></a> [default\_branch](#input\_default\_branch) | Default branch name | `string` | `"main"` | no |
+| <a name="input_delete_branch_on_merge"></a> [delete\_branch\_on\_merge](#input\_delete\_branch\_on\_merge) | Delete branch on merge | `bool` | `false` | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between ID elements.<br/>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
+| <a name="input_deploy_keys"></a> [deploy\_keys](#input\_deploy\_keys) | Deploy keys for the repository | <pre>map(object({<br/>    title     = string<br/>    key       = string<br/>    read_only = optional(bool, false)<br/>  }))</pre> | `{}` | no |
+| <a name="input_description"></a> [description](#input\_description) | Description of the repository | `string` | `null` | no |
 | <a name="input_descriptor_formats"></a> [descriptor\_formats](#input\_descriptor\_formats) | Describe additional descriptors to be output in the `descriptors` output map.<br/>Map of maps. Keys are names of descriptors. Values are maps of the form<br/>`{<br/>   format = string<br/>   labels = list(string)<br/>}`<br/>(Type is `any` so the map values can later be enhanced to provide additional options.)<br/>`format` is a Terraform format string to be passed to the `format()` function.<br/>`labels` is a list of labels, in order, to pass to `format()` function.<br/>Label values will be normalized before being passed to `format()` so they will be<br/>identical to how they appear in `id`.<br/>Default is `{}` (`descriptors` output will be empty). | `any` | `{}` | no |
+| <a name="input_enable_vulnerability_alerts"></a> [enable\_vulnerability\_alerts](#input\_enable\_vulnerability\_alerts) | Enable vulnerability alerts | `bool` | `true` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
-| <a name="input_example"></a> [example](#input\_example) | Example variable | `string` | `"hello world"` | no |
+| <a name="input_environments"></a> [environments](#input\_environments) | Environments for the repository. Enviroment secrets should be encrypted using the GitHub public key in Base64 format if prefixed with nacl:. Read more: https://docs.github.com/en/actions/security-for-github-actions/encrypted-secrets | <pre>map(object({<br/>    wait_timer          = optional(number, 0)<br/>    can_admins_bypass   = optional(bool, false)<br/>    prevent_self_review = optional(bool, false)<br/>    reviewers = optional(object({<br/>      teams = optional(list(string), [])<br/>      users = optional(list(string), [])<br/>    }), null)<br/>    deployment_branch_policy = optional(object({<br/>      protected_branches = optional(bool, false)<br/>      custom_branches = optional(object({<br/>        branches = optional(list(string), null)<br/>        tags     = optional(list(string), null)<br/>      }), null)<br/>    }), null)<br/>    variables = optional(map(string), null)<br/>    secrets   = optional(map(string), null)<br/>  }))</pre> | `{}` | no |
+| <a name="input_gitignore_template"></a> [gitignore\_template](#input\_gitignore\_template) | Gitignore template | `string` | `null` | no |
+| <a name="input_has_discussions"></a> [has\_discussions](#input\_has\_discussions) | Whether the repository has discussions enabled | `bool` | `false` | no |
+| <a name="input_has_downloads"></a> [has\_downloads](#input\_has\_downloads) | Whether the repository has downloads enabled | `bool` | `false` | no |
+| <a name="input_has_issues"></a> [has\_issues](#input\_has\_issues) | Whether the repository has issues enabled | `bool` | `false` | no |
+| <a name="input_has_projects"></a> [has\_projects](#input\_has\_projects) | Whether the repository has projects enabled | `bool` | `false` | no |
+| <a name="input_has_wiki"></a> [has\_wiki](#input\_has\_wiki) | Whether the repository has wiki enabled | `bool` | `false` | no |
+| <a name="input_homepage_url"></a> [homepage\_url](#input\_homepage\_url) | Homepage URL of the repository | `string` | `null` | no |
 | <a name="input_id_length_limit"></a> [id\_length\_limit](#input\_id\_length\_limit) | Limit `id` to this many characters (minimum 6).<br/>Set to `0` for unlimited length.<br/>Set to `null` for keep the existing setting, which defaults to `0`.<br/>Does not affect `id_full`. | `number` | `null` | no |
+| <a name="input_ignore_vulnerability_alerts_during_read"></a> [ignore\_vulnerability\_alerts\_during\_read](#input\_ignore\_vulnerability\_alerts\_during\_read) | Ignore vulnerability alerts during read | `bool` | `false` | no |
+| <a name="input_is_template"></a> [is\_template](#input\_is\_template) | Whether the repository is a template | `bool` | `false` | no |
 | <a name="input_label_key_case"></a> [label\_key\_case](#input\_label\_key\_case) | Controls the letter case of the `tags` keys (label names) for tags generated by this module.<br/>Does not affect keys of tags passed in via the `tags` input.<br/>Possible values: `lower`, `title`, `upper`.<br/>Default value: `title`. | `string` | `null` | no |
 | <a name="input_label_order"></a> [label\_order](#input\_label\_order) | The order in which the labels (ID elements) appear in the `id`.<br/>Defaults to ["namespace", "environment", "stage", "name", "attributes"].<br/>You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present. | `list(string)` | `null` | no |
 | <a name="input_label_value_case"></a> [label\_value\_case](#input\_label\_value\_case) | Controls the letter case of ID elements (labels) as included in `id`,<br/>set as tag values, and output by this module individually.<br/>Does not affect values of tags passed in via the `tags` input.<br/>Possible values: `lower`, `title`, `upper` and `none` (no transformation).<br/>Set this to `title` and set `delimiter` to `""` to yield Pascal Case IDs.<br/>Default value: `lower`. | `string` | `null` | no |
+| <a name="input_labels"></a> [labels](#input\_labels) | A map of labels to configure for the repository | <pre>map(object({<br/>    color       = string<br/>    description = string<br/>  }))</pre> | `{}` | no |
 | <a name="input_labels_as_tags"></a> [labels\_as\_tags](#input\_labels\_as\_tags) | Set of labels (ID elements) to include as tags in the `tags` output.<br/>Default is to include all labels.<br/>Tags with empty values will not be included in the `tags` output.<br/>Set to `[]` to suppress all generated tags.<br/>**Notes:**<br/>  The value of the `name` tag, if included, will be the `id`, not the `name`.<br/>  Unlike other `null-label` inputs, the initial setting of `labels_as_tags` cannot be<br/>  changed in later chained modules. Attempts to change it will be silently ignored. | `set(string)` | <pre>[<br/>  "default"<br/>]</pre> | no |
+| <a name="input_license_template"></a> [license\_template](#input\_license\_template) | License template | `string` | `null` | no |
+| <a name="input_merge_commit_message"></a> [merge\_commit\_message](#input\_merge\_commit\_message) | Merge commit message. Must be PR\_BODY, PR\_TITLE or BLANK. | `string` | `"PR_BODY"` | no |
+| <a name="input_merge_commit_title"></a> [merge\_commit\_title](#input\_merge\_commit\_title) | Merge commit title. Must be PR\_TITLE or MERGE\_MESSAGE. | `string` | `"PR_TITLE"` | no |
 | <a name="input_name"></a> [name](#input\_name) | ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'.<br/>This is the only ID element not also included as a `tag`.<br/>The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input. | `string` | `null` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `string` | `null` | no |
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br/>Characters matching the regex will be removed from the ID elements.<br/>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
+| <a name="input_rulesets"></a> [rulesets](#input\_rulesets) | A map of rulesets to configure for the repository | <pre>map(object({<br/>    name        = string<br/>    enforcement = string // disabled, active<br/>    target      = string // branch, tag<br/>    bypass_actors = optional(list(object({<br/>      // always, pull_request<br/>      bypass_mode = string<br/>      actor_id    = optional(string, null)<br/>      // RepositoryRole, Team, Integration, OrganizationAdmin<br/>      actor_type = string<br/>    })), [])<br/>    conditions = object({<br/>      ref_name = object({<br/>        include = optional(list(string), []) // ~DEFAULT_BRANCH to include the default branch or ~ALL<br/>        exclude = optional(list(string), []) // ~DEFAULT_BRANCH to exclude the default branch or ~ALL<br/>      })<br/>    })<br/>    rules = object({<br/>      branch_name_pattern = optional(object({<br/>        operator = string // starts_with, ends_with, contains, equals<br/>        pattern  = string<br/>        name     = optional(string, null)<br/>        negate   = optional(bool, false)<br/>      }), null),<br/>      commit_author_email_pattern = optional(object({<br/>        operator = string // starts_with, ends_with, contains, equals<br/>        pattern  = string<br/>        name     = optional(string, null)<br/>        negate   = optional(bool, false)<br/>      }), null),<br/>      creation         = optional(bool, false),<br/>      deletion         = optional(bool, false),<br/>      non_fast_forward = optional(bool, false),<br/>      required_pull_request_reviews = optional(object({<br/>        dismiss_stale_reviews           = bool<br/>        required_approving_review_count = number<br/>      }), null),<br/>      commit_message_pattern = optional(object({<br/>        operator = string // starts_with, ends_with, contains, equals<br/>        pattern  = string<br/>        name     = optional(string, null)<br/>        negate   = optional(bool, false)<br/>      }), null),<br/>      committer_email_pattern = optional(object({<br/>        operator = string // starts_with, ends_with, contains, equals<br/>        pattern  = string<br/>        name     = optional(string, null)<br/>        negate   = optional(bool, false)<br/>      }), null),<br/>      merge_queue = optional(object({<br/>        check_response_timeout_minutes    = optional(number, 60)<br/>        grouping_strategy                 = string // ALLGREEN, HEADGREEN<br/>        max_entries_to_build              = optional(number, 5)<br/>        max_entries_to_merge              = optional(number, 5)<br/>        merge_method                      = optional(string, "MERGE") // MERGE, SQUASH, REBASE<br/>        min_entries_to_merge              = optional(number, 1)<br/>        min_entries_to_merge_wait_minutes = optional(number, 5)<br/>      }), null),<br/>      pull_request = optional(object({<br/>        dismiss_stale_reviews_on_push     = optional(bool, false)<br/>        require_code_owner_review         = optional(bool, false)<br/>        require_last_push_approval        = optional(bool, false)<br/>        required_approving_review_count   = optional(number, 0)<br/>        required_review_thread_resolution = optional(bool, false)<br/>      }), null),<br/>      required_deployments = optional(object({<br/>        required_deployment_environments = optional(list(string), [])<br/>      }), null),<br/>      required_status_checks = optional(object({<br/>        required_check = list(object({<br/>          context        = string<br/>          integration_id = optional(number, null)<br/>        }))<br/>        strict_required_status_checks_policy = optional(bool, false)<br/>        do_not_enforce_on_create             = optional(bool, false)<br/>      }), null),<br/>      tag_name_pattern = optional(object({<br/>        operator = string // starts_with, ends_with, contains, equals<br/>        pattern  = string<br/>        name     = optional(string, null)<br/>        negate   = optional(bool, false)<br/>      }), null),<br/>      // Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701<br/>      # required_code_scanning = optional(object({<br/>      #   required_code_scanning_tool = list(object({<br/>      #     alerts_threshold          = string // none, errors, errors_and_warnings, all<br/>      #     security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all<br/>      #     tool                      = string<br/>      #   }))<br/>      # }), null),<br/>    }),<br/>  }))</pre> | `{}` | no |
+| <a name="input_secrets"></a> [secrets](#input\_secrets) | Secrets for the repository (if prefixed with nacl: it should be encrypted value using the GitHub public key in Base64 format. Read more: https://docs.github.com/en/actions/security-for-github-actions/encrypted-secrets) | `map(string)` | `{}` | no |
+| <a name="input_security_and_analysis"></a> [security\_and\_analysis](#input\_security\_and\_analysis) | Security and analysis settings | <pre>object({<br/>    advanced_security               = bool<br/>    secret_scanning                 = bool<br/>    secret_scanning_push_protection = bool<br/>  })</pre> | `null` | no |
+| <a name="input_squash_merge_commit_message"></a> [squash\_merge\_commit\_message](#input\_squash\_merge\_commit\_message) | Squash merge commit message. Must be PR\_BODY, COMMIT\_MESSAGES or BLANK. | `string` | `"COMMIT_MESSAGE"` | no |
+| <a name="input_squash_merge_commit_title"></a> [squash\_merge\_commit\_title](#input\_squash\_merge\_commit\_title) | Squash merge commit title. Must be PR\_TITLE or COMMIT\_OR\_PR\_TITLE. | `string` | `"PR_TITLE"` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
+| <a name="input_teams"></a> [teams](#input\_teams) | A map of teams and their permissions for the repository | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
+| <a name="input_topics"></a> [topics](#input\_topics) | List of repository topics | `list(string)` | `[]` | no |
+| <a name="input_users"></a> [users](#input\_users) | A map of users and their permissions for the repository | `map(string)` | `{}` | no |
+| <a name="input_variables"></a> [variables](#input\_variables) | Environment variables for the repository | `map(string)` | `{}` | no |
+| <a name="input_visibility"></a> [visibility](#input\_visibility) | Visibility of the repository. Must be public, private, or internal. | `string` | `"public"` | no |
+| <a name="input_web_commit_signoff_required"></a> [web\_commit\_signoff\_required](#input\_web\_commit\_signoff\_required) | Require signoff on web commits | `bool` | `false` | no |
+| <a name="input_webhooks"></a> [webhooks](#input\_webhooks) | A map of webhooks to configure for the repository | <pre>map(object({<br/>    active       = optional(bool, true)<br/>    events       = list(string)<br/>    url          = string<br/>    content_type = optional(string, "json")<br/>    insecure_ssl = optional(bool, false)<br/>    secret       = optional(string, null)<br/>  }))</pre> | `{}` | no |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_example"></a> [example](#output\_example) | Example output |
-| <a name="output_id"></a> [id](#output\_id) | ID of the created example |
-| <a name="output_random"></a> [random](#output\_random) | Stable random number for this example |
+No outputs.
 <!-- markdownlint-restore -->
 
 
@@ -194,12 +250,12 @@ For additional context, refer to some of these links.
 > ✅ Your team owns everything.<br/>
 > ✅ 100% Open Source and backed by fanatical support.<br/>
 >
-> <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
+> <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
 > <details><summary>📚 <strong>Learn More</strong></summary>
 >
 > <br/>
 >
-> Cloud Posse is the leading [**DevOps Accelerator**](https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=commercial_support) for funded startups and enterprises.
+> Cloud Posse is the leading [**DevOps Accelerator**](https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=commercial_support) for funded startups and enterprises.
 >
 > *Your team can operate like a pro today.*
 >
@@ -211,7 +267,7 @@ For additional context, refer to some of these links.
 > - **Security Baseline.** Establish a secure environment from the start, with built-in governance, accountability, and comprehensive audit logs, safeguarding your operations.
 > - **GitOps.** Empower your team to manage infrastructure changes confidently and efficiently through Pull Requests, leveraging the full power of GitHub Actions.
 >
-> <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
+> <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
 >
 > #### Day-2: Your Operational Mastery
 > - **Training.** Equip your team with the knowledge and skills to confidently manage the infrastructure, ensuring long-term success and self-sufficiency.
@@ -222,7 +278,7 @@ For additional context, refer to some of these links.
 > - **Migration Assistance.** Accelerate your migration process with our dedicated support, minimizing disruption and speeding up time-to-value.
 > - **Customer Workshops.** Engage with our team in weekly workshops, gaining insights and strategies to continuously improve and innovate.
 >
-> <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
+> <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
 > </details>
 
 ## ✨ Contributing
@@ -233,14 +289,14 @@ This project is under active development, and we encourage contributions from ou
 
 Many thanks to our outstanding contributors:
 
-<a href="https://github.com/cloudposse/terraform-example-module/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=cloudposse/terraform-example-module&max=24" />
+<a href="https://github.com/cloudposse/terraform-github-repository/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=cloudposse/terraform-github-repository&max=24" />
 </a>
 
-For 🐛 bug reports & feature requests, please use the [issue tracker](https://github.com/cloudposse/terraform-example-module/issues).
+For 🐛 bug reports & feature requests, please use the [issue tracker](https://github.com/cloudposse/terraform-github-repository/issues).
 
 In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
- 1. Review our [Code of Conduct](https://github.com/cloudposse/terraform-example-module/?tab=coc-ov-file#code-of-conduct) and [Contributor Guidelines](https://github.com/cloudposse/.github/blob/main/CONTRIBUTING.md).
+ 1. Review our [Code of Conduct](https://github.com/cloudposse/terraform-github-repository/?tab=coc-ov-file#code-of-conduct) and [Contributor Guidelines](https://github.com/cloudposse/.github/blob/main/CONTRIBUTING.md).
  2. **Fork** the repo on GitHub
  3. **Clone** the project to your own machine
  4. **Commit** changes to your own branch
@@ -283,16 +339,16 @@ Learn more about our [automated testing in our documentation](https://docs.cloud
 
 ### 🌎 Slack Community
 
-Join our [Open Source Community](https://cpco.io/slack?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=slack) on Slack. It's **FREE** for everyone! Our "SweetOps" community is where you get to talk with others who share a similar vision for how to rollout and manage infrastructure. This is the best place to talk shop, ask questions, solicit feedback, and work together as a community to build totally *sweet* infrastructure.
+Join our [Open Source Community](https://cpco.io/slack?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=slack) on Slack. It's **FREE** for everyone! Our "SweetOps" community is where you get to talk with others who share a similar vision for how to rollout and manage infrastructure. This is the best place to talk shop, ask questions, solicit feedback, and work together as a community to build totally *sweet* infrastructure.
 
 ### 📰 Newsletter
 
-Sign up for [our newsletter](https://cpco.io/newsletter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=newsletter) and join 3,000+ DevOps engineers, CTOs, and founders who get insider access to the latest DevOps trends, so you can always stay in the know.
+Sign up for [our newsletter](https://cpco.io/newsletter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=newsletter) and join 3,000+ DevOps engineers, CTOs, and founders who get insider access to the latest DevOps trends, so you can always stay in the know.
 Dropped straight into your Inbox every week — and usually a 5-minute read.
 
-### 📆 Office Hours <a href="https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=office_hours"><img src="https://img.cloudposse.com/fit-in/200x200/https://cloudposse.com/wp-content/uploads/2019/08/Powered-by-Zoom.png" align="right" /></a>
+### 📆 Office Hours <a href="https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=office_hours"><img src="https://img.cloudposse.com/fit-in/200x200/https://cloudposse.com/wp-content/uploads/2019/08/Powered-by-Zoom.png" align="right" /></a>
 
-[Join us every Wednesday via Zoom](https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=office_hours) for your weekly dose of insider DevOps trends, AWS news and Terraform insights, all sourced from our SweetOps community, plus a _live Q&A_ that you can’t find anywhere else.
+[Join us every Wednesday via Zoom](https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=office_hours) for your weekly dose of insider DevOps trends, AWS news and Terraform insights, all sourced from our SweetOps community, plus a _live Q&A_ that you can’t find anywhere else.
 It's **FREE** for everyone!
 ## License
 
@@ -336,6 +392,6 @@ Copyright © 2021-2025 [Cloud Posse, LLC](https://cloudposse.com)
 
 
 
-<a href="https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-example-module&utm_content=readme_footer_link"><img alt="README footer" src="https://cloudposse.com/readme/footer/img"/></a>
+<a href="https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-github-repository&utm_content=readme_footer_link"><img alt="README footer" src="https://cloudposse.com/readme/footer/img"/></a>
 
-<img alt="Beacon" width="0" src="https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/terraform-example-module?pixel&cs=github&cm=readme&an=terraform-example-module"/>
+<img alt="Beacon" width="0" src="https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/terraform-github-repository?pixel&cs=github&cm=readme&an=terraform-github-repository"/>
