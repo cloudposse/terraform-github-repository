@@ -43,11 +43,6 @@ output "primary_language" {
   value       = module.example.primary_language
 }
 
-output "autolink_references_etags" {
-  description = "Autolink references etags"
-  value       = module.example.autolink_references_etags
-}
-
 output "webhooks_urls" {
   description = "Webhooks URLs"
   value       = module.example.webhooks_urls

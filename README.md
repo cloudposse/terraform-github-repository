@@ -217,7 +217,6 @@ Here is an example of using this module:
 
 | Name | Description |
 |------|-------------|
-| <a name="output_autolink_references_etags"></a> [autolink\_references\_etags](#output\_autolink\_references\_etags) | Autolink references etags |
 | <a name="output_collaborators_invitation_ids"></a> [collaborators\_invitation\_ids](#output\_collaborators\_invitation\_ids) | Collaborators invitation IDs |
 | <a name="output_full_name"></a> [full\_name](#output\_full\_name) | Full name of the created repository |
 | <a name="output_git_clone_url"></a> [git\_clone\_url](#output\_git\_clone\_url) | Git clone URL of the created repository |

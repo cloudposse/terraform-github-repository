@@ -43,11 +43,6 @@ output "primary_language" {
   value       = join("", github_repository.default.*.primary_language)
 }
 
-output "autolink_references_etags" {
-  description = "Autolink references etags"
-  value       = { for k, v in github_repository_autolink_reference.default : k => v.etag }
-}
-
 output "webhooks_urls" {
   description = "Webhooks URLs"
   value       = { for k, v in github_repository_webhook.default : k => v.url }
@@ -70,5 +65,5 @@ output "rulesets_node_ids" {
 
 output "rulesets_rules_ids" {
   description = "Rulesets rules IDs"
-  value       = { for k, v in github_repository_ruleset.default : k => v.ruleset_id }
+  value       = { for k, v in github_repository_ruleset.default : k => format("%d", v.ruleset_id) }
 }

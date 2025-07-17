@@ -325,6 +325,39 @@ func TestExamplesComplete(t *testing.T) {
 
   // This will run `terraform apply` a second time and fail the test if there are any errors
   terraform.Apply(t, terraformOptions)
+
+  // Read terraform outputs and assert them
+  fullName := terraform.Output(t, terraformOptions, "full_name")
+  gitCloneUrl := terraform.Output(t, terraformOptions, "git_clone_url")
+  htmlUrl := terraform.Output(t, terraformOptions, "html_url")
+  sshCloneUrl := terraform.Output(t, terraformOptions, "ssh_clone_url")
+  svnUrl := terraform.Output(t, terraformOptions, "svn_url")
+  repoId := terraform.Output(t, terraformOptions, "repo_id")
+  nodeId := terraform.Output(t, terraformOptions, "node_id")
+  primaryLanguage := terraform.Output(t, terraformOptions, "primary_language")
+  webhooksUrls := terraform.OutputMap(t, terraformOptions, "webhooks_urls")
+  collaboratorsInvitationIds := terraform.OutputList(t, terraformOptions, "collaborators_invitation_ids")
+  rulesetsEtags := terraform.OutputMap(t, terraformOptions, "rulesets_etags")
+  rulesetsNodeIds := terraform.OutputMap(t, terraformOptions, "rulesets_node_ids")
+  rulesetsRulesIds := terraform.OutputMap(t, terraformOptions, "rulesets_rules_ids")
+
+  assert.Equal(t, fullName, fmt.Sprintf("%s/%s", owner, repositoryName))
+  assert.Equal(t, gitCloneUrl, fmt.Sprintf("git://github.com/%s/%s.git", owner, repositoryName))
+  assert.Equal(t, htmlUrl, fmt.Sprintf("https://github.com/%s/%s", owner, repositoryName))
+  assert.Equal(t, sshCloneUrl, fmt.Sprintf("git@github.com:%s/%s.git", owner, repositoryName))
+  assert.Equal(t, svnUrl, fmt.Sprintf("https://github.com/%s/%s", owner, repositoryName))
+  assert.Equal(t, repoId, fmt.Sprintf("%d", repo.GetID()))
+  assert.Equal(t, nodeId, repo.GetNodeID())
+  assert.Equal(t, primaryLanguage, repo.GetLanguage())
+
+  assert.Equal(t, 1, len(webhooksUrls))
+  assert.Equal(t, fmt.Sprintf("https://api.github.com/repos/%s/%s/hooks/%d", owner, repositoryName, webhook.GetID()), webhooksUrls["notify-on-push"])
+  assert.Equal(t, 0, len(collaboratorsInvitationIds))
+  assert.Equal(t, 1, len(rulesetsEtags))
+  assert.Equal(t, 1, len(rulesetsNodeIds))
+  assert.Equal(t, rulesets[0].GetNodeID(), rulesetsNodeIds["default"])
+  assert.Equal(t, 1, len(rulesetsRulesIds))
+  assert.Equal(t, fmt.Sprintf("%d", rulesets[0].GetID()), rulesetsRulesIds["default"])
 }
 
 // Test the Terraform module in examples/minimum using Terratest.
