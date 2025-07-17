@@ -23,7 +23,6 @@ func cleanup(t *testing.T, terraformOptions *terraform.Options, tempTestFolder s
 
 // Test the Terraform module in examples/complete using Terratest.
 func TestExamplesComplete(t *testing.T) {
-  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -326,7 +325,6 @@ func TestExamplesComplete(t *testing.T) {
 
 // Test the Terraform module in examples/minimum using Terratest.
 func TestExamplesPrivate(t *testing.T) {
-  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -562,7 +560,6 @@ func TestExamplesPrivate(t *testing.T) {
 
 // Test the Terraform module in examples/minimum using Terratest.
 func TestExamplesTagsRulesets(t *testing.T) {
-  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -686,10 +683,7 @@ func TestExamplesTagsRulesets(t *testing.T) {
   // assert.Equal(t, newExample+" "+random3, example3, "Expected `example` to use new random number")
 }
 
-
-
 func TestExamplesCompleteDisabled(t *testing.T) {
-  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
