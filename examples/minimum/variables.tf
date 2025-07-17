@@ -6,8 +6,8 @@ variable "owner" {
 variable "template" {
   description = "Template repository"
   type = object({
-    owner = string
-    name = string
+    owner                = string
+    name                 = string
     include_all_branches = optional(bool, false)
   })
   default = null
