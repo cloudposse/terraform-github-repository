@@ -21,6 +21,16 @@ variable "homepage_url" {
   default     = null
 }
 
+variable "template" {
+  description = "Template repository"
+  type = object({
+    owner = string
+    name = string
+    include_all_branches = optional(bool, false)
+  })
+  default = null
+}
+
 variable "archived" {
   description = "Whether the repository is archived"
   type        = bool

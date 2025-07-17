@@ -8,6 +8,15 @@ resource "github_repository" "default" {
   homepage_url = var.homepage_url
   topics       = var.topics
 
+  dynamic "template" {
+    for_each = var.template != null ? [var.template] : []
+    content {
+      repository           = template.value.name
+      owner                = template.value.owner
+      include_all_branches = template.value.include_all_branches
+    }
+  }
+
   archived           = var.archived
   archive_on_destroy = var.archive_on_destroy
 

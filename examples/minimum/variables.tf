@@ -3,6 +3,16 @@ variable "owner" {
   type        = string
 }
 
+variable "template" {
+  description = "Template repository"
+  type = object({
+    owner = string
+    name = string
+    include_all_branches = optional(bool, false)
+  })
+  default = null
+}
+
 variable "description" {
   description = "Description of the repository"
   type        = string

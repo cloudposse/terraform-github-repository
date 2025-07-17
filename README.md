@@ -204,6 +204,7 @@ Here is an example of using this module:
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_teams"></a> [teams](#input\_teams) | A map of teams and their permissions for the repository | `map(string)` | `{}` | no |
+| <a name="input_template"></a> [template](#input\_template) | Template repository | <pre>object({<br/>    owner = string<br/>    name = string<br/>    include_all_branches = optional(bool, false)<br/>  })</pre> | `null` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
 | <a name="input_topics"></a> [topics](#input\_topics) | List of repository topics | `list(string)` | `[]` | no |
 | <a name="input_users"></a> [users](#input\_users) | A map of users and their permissions for the repository | `map(string)` | `{}` | no |
@@ -214,7 +215,23 @@ Here is an example of using this module:
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_autolink_references_etags"></a> [autolink\_references\_etags](#output\_autolink\_references\_etags) | Autolink references etags |
+| <a name="output_collaborators_invitation_ids"></a> [collaborators\_invitation\_ids](#output\_collaborators\_invitation\_ids) | Collaborators invitation IDs |
+| <a name="output_full_name"></a> [full\_name](#output\_full\_name) | Full name of the created repository |
+| <a name="output_git_clone_url"></a> [git\_clone\_url](#output\_git\_clone\_url) | Git clone URL of the created repository |
+| <a name="output_html_url"></a> [html\_url](#output\_html\_url) | HTML URL of the created repository |
+| <a name="output_http_clone_url"></a> [http\_clone\_url](#output\_http\_clone\_url) | SSH clone URL of the created repository |
+| <a name="output_node_id"></a> [node\_id](#output\_node\_id) | Node ID of the created repository |
+| <a name="output_primary_language"></a> [primary\_language](#output\_primary\_language) | Primary language of the created repository |
+| <a name="output_repo_id"></a> [repo\_id](#output\_repo\_id) | Repository ID of the created repository |
+| <a name="output_rulesets_etags"></a> [rulesets\_etags](#output\_rulesets\_etags) | Rulesets etags |
+| <a name="output_rulesets_node_ids"></a> [rulesets\_node\_ids](#output\_rulesets\_node\_ids) | Rulesets node IDs |
+| <a name="output_rulesets_rules_ids"></a> [rulesets\_rules\_ids](#output\_rulesets\_rules\_ids) | Rulesets rules IDs |
+| <a name="output_ssh_clone_url"></a> [ssh\_clone\_url](#output\_ssh\_clone\_url) | SSH clone URL of the created repository |
+| <a name="output_svn_url"></a> [svn\_url](#output\_svn\_url) | SVN URL of the created repository |
+| <a name="output_webhooks_urls"></a> [webhooks\_urls](#output\_webhooks\_urls) | Webhooks URLs |
 <!-- markdownlint-restore -->
 
 

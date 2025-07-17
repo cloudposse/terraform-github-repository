@@ -7,6 +7,8 @@ module "example" {
   description = var.description
   visibility  = var.visibility
 
+  template = var.template
+
   homepage_url = var.homepage_url
   topics       = var.topics
 

@@ -690,6 +690,108 @@ func TestExamplesTagsRulesets(t *testing.T) {
   // assert.Equal(t, newExample+" "+random3, example3, "Expected `example` to use new random number")
 }
 
+// Test the Terraform module in examples/minimum using Terratest.
+func TestExamplesFromTemplate(t *testing.T) {
+  t.Parallel()
+  randID := strings.ToLower(random.UniqueId())
+
+  rootFolder := "../../"
+  terraformFolderRelativeToRoot := "examples/minimum"
+  varFiles := []string{"fixtures.us-east-2.tfvars"}
+
+  tempTestFolder := testStructure.CopyTerraformFolderToTemp(t, rootFolder, terraformFolderRelativeToRoot)
+
+  repositoryName := fmt.Sprintf("terraform-github-repository-test-%s", randID)
+
+  terraformOptions := &terraform.Options{
+    // The path to where our Terraform code is located
+    TerraformDir: tempTestFolder,
+    Upgrade:      true,
+    // Variables to pass to our Terraform code using -var-file options
+    VarFiles: varFiles,
+    Vars: map[string]interface{}{
+      "enabled":    true,
+      "name": repositoryName,
+      "visibility": "public",
+      "template": map[string]interface{}{
+        "owner": "cloudposse-tests",
+        "name": "test-terraform-github-repository-template",
+        "include_all_branches": true,
+      },
+    },
+  }
+
+  // At the end of the test, run `terraform destroy` to clean up any resources that were created
+  defer cleanup(t, terraformOptions, tempTestFolder)
+
+  // This will run `terraform init` and `terraform apply` and fail the test if there are any errors
+  terraform.InitAndApply(t, terraformOptions)
+
+  token := os.Getenv("GITHUB_TOKEN")
+
+  client := github.NewClient(nil).WithAuthToken(token)
+
+  repo, _, err := client.Repositories.Get(context.Background(), owner, repositoryName)
+  assert.NoError(t, err)
+
+  // Check if the repository was auto-initialized
+  commits, _, err := client.Repositories.ListCommits(context.Background(), owner, repositoryName, nil)
+  assert.NoError(t, err)
+  assert.Equal(t, 1, len(commits))
+
+  readmeContent, _, err := client.Repositories.GetReadme(context.Background(), owner, repositoryName, nil)
+  assert.NoError(t, err)
+
+  readmeData, err := readmeContent.GetContent()
+  assert.NoError(t, err)
+  assert.Contains(t, readmeData, "test-terraform-github-repository-template")
+
+  assert.Equal(t, "public", repo.GetVisibility())
+
+  //expectedExampleInput := "Hello, world!"
+
+  // Run `terraform output` to get the value of an output variable
+  // id := terraform.Output(t, terraformOptions, "id")
+  // example := terraform.Output(t, terraformOptions, "example")
+  // random := terraform.Output(t, terraformOptions, "random")
+
+  // Verify we're getting back the outputs we expect
+  // Ensure we get a random number appended
+  // assert.Equal(t, expectedExampleInput+" "+random, example)
+  // Ensure we get the attribute included in the ID
+  // assert.Equal(t, "eg-ue2-test-example-"+randID, id)
+
+  // ************************************************************************
+  // This steps below are unusual, not generally part of the testing
+  // but included here as an example of testing this specific module.
+  // This module has a random number that is supposed to change
+  // only when the example changes. So we run it again to ensure
+  // it does not change.
+
+  // This will run `terraform apply` a second time and fail the test if there are any errors
+  terraform.Apply(t, terraformOptions)
+
+  // id2 := terraform.Output(t, terraformOptions, "id")
+  // example2 := terraform.Output(t, terraformOptions, "example")
+  // random2 := terraform.Output(t, terraformOptions, "random")
+
+  // assert.Equal(t, id, id2, "Expected `id` to be stable")
+  // assert.Equal(t, example, example2, "Expected `example` to be stable")
+  // assert.Equal(t, random, random2, "Expected `random` to be stable")
+
+  // // Then we run change the example and run it a third time and
+  // verify that the random number changed
+  // newExample := "Goodbye"
+  // terraformOptions.Vars["example_input_override"] = newExample
+  // terraform.Apply(t, terraformOptions)
+
+  // example3 := terraform.Output(t, terraformOptions, "example")
+  // random3 := terraform.Output(t, terraformOptions, "random")
+
+  // assert.NotEqual(t, random, random3, "Expected `random` to change when `example` changed")
+  // assert.Equal(t, newExample+" "+random3, example3, "Expected `example` to use new random number")
+}
+
 func TestExamplesCompleteDisabled(t *testing.T) {
   t.Parallel()
   randID := strings.ToLower(random.UniqueId())
