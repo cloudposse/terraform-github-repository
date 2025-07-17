@@ -72,7 +72,7 @@ variable "allow_auto_merge" {
 variable "allow_squash_merge" {
   description = "Allow squash merge"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "squash_merge_commit_title" {
@@ -100,13 +100,13 @@ variable "squash_merge_commit_message" {
 variable "allow_merge_commit" {
   description = "Allow merge commit"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "merge_commit_title" {
   description = "Merge commit title. Must be PR_TITLE or MERGE_MESSAGE."
   type        = string
-  default     = "MERGE_MESSAGE"
+  default     = "PR_TITLE"
 
   validation {
     condition     = contains(["PR_TITLE", "MERGE_MESSAGE"], var.merge_commit_title)
@@ -117,7 +117,7 @@ variable "merge_commit_title" {
 variable "merge_commit_message" {
   description = "Merge commit message. Must be PR_BODY, PR_TITLE or BLANK."
   type        = string
-  default     = "BLANK"
+  default     = "PR_BODY"
 
   validation {
     condition     = contains(["PR_BODY", "PR_TITLE", "BLANK"], var.merge_commit_message)
@@ -128,7 +128,7 @@ variable "merge_commit_message" {
 variable "allow_rebase_merge" {
   description = "Allow rebase merge"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "delete_branch_on_merge" {
@@ -476,4 +476,79 @@ variable "rulesets" {
     }),
   }))
   default = {}
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : can(regex("^[a-zA-Z0-9_]+$", k))])
+    error_message = "Ruleset names must be alphanumeric and underscores only, can not start with a number"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : contains(["disabled", "active"], v.enforcement)])
+    error_message = "Ruleset enforcement must be disabled or active"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : contains(["branch", "tag"], v.target)])
+    error_message = "Ruleset target must be branch or tag"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["always", "pull_request"], v.bypass_actors.bypass_mode), true)])
+    error_message = "Ruleset bypass mode must be always or pull_request"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["RepositoryRole", "Team", "Integration", "OrganizationAdmin"], v.bypass_actors.actor_type), true)])
+    error_message = "Ruleset actor type must be RepositoryRole, Team, Integration or OrganizationAdmin"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["starts_with", "ends_with", "contains", "regex"], v.rules.branch_name_pattern.operator), true)])
+    error_message = "Ruleset branch name pattern operator must be starts_with, ends_with, contains or regex"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "branch" || try(v.rules.branch_name_pattern == null, true)])
+    error_message = "Ruleset branch name pattern can be specified only for branch rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["starts_with", "ends_with", "contains", "equals", "regex"], v.rules.commit_author_email_pattern.operator), true)])
+    error_message = "Ruleset commit author email pattern operator must be starts_with, ends_with, contains, equals or regex"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["starts_with", "ends_with", "contains", "equals", "regex"], v.rules.commit_message_pattern.operator), true)])
+    error_message = "Ruleset commit message pattern operator must be starts_with, ends_with, contains, equals or regex"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["starts_with", "ends_with", "contains", "equals", "regex"], v.rules.committer_email_pattern.operator), true)])
+    error_message = "Ruleset committer email pattern operator must be starts_with, ends_with, contains, equals or regex"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["ALLGREEN", "HEADGREEN"], v.rules.merge_queue.grouping_strategy), true)])
+    error_message = "Ruleset merge queue grouping strategy must be ALLGREEN or HEADGREEN"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["MERGE", "SQUASH", "REBASE"], v.rules.merge_queue.merge_method), true)])
+    error_message = "Ruleset merge queue merge method must be MERGE, SQUASH or REBASE"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.rules.merge_queue == null || alltrue([for c in v.conditions.ref_name.include : can(!strcontains(c, "*") && !strcontains(c, "~ALL"))])])
+    error_message = "Ruleset merge queue condition mush point to specific branch"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["starts_with", "ends_with", "contains", "regex"], v.rules.tag_name_pattern.operator), true)])
+    error_message = "Ruleset branch name pattern operator must be starts_with, ends_with, contains or regex"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "tag" || try(v.rules.tag_name_pattern == null, true)])
+    error_message = "Ruleset tag name pattern can be specified only for tag rulesets"
+  }
 }

@@ -48,9 +48,9 @@ resource "github_repository" "default" {
     for_each = var.security_and_analysis != null ? [var.security_and_analysis] : []
     content {
       dynamic "advanced_security" {
-        for_each = var.visibility != "public" ? [security_and_analysis.value.advanced_security] : []
+        for_each = var.visibility != "public" && security_and_analysis.value.advanced_security ? [1] : []
         content {
-          status = security_and_analysis.value.advanced_security ? "enabled" : "disabled"
+          status = "enabled"
         }
       }
       secret_scanning {
@@ -64,7 +64,7 @@ resource "github_repository" "default" {
 }
 
 resource "github_branch_default" "default" {
-  count = module.this.enabled ? 1 : 0
+  count = module.this.enabled && var.auto_init ? 1 : 0
 
   repository = join("", github_repository.default[*].name)
   branch     = var.default_branch
@@ -328,6 +328,11 @@ locals {
     for e, c in local.rulesets :
     c.bypass_actors != null ? compact([for b in c.bypass_actors : b.actor_type == "Team" ? b.actor_id : null]) : []
   ])
+
+  ruleset_conditions_refs_prefix = {
+    "branch" = "refs/heads/"
+    "tag"    = "refs/tags/"
+  }
 }
 
 data "github_team" "ruleset_rules_teams" {
@@ -347,8 +352,16 @@ resource "github_repository_ruleset" "default" {
 
   conditions {
     ref_name {
-      include = [for c in each.value.conditions.ref_name.include : startswith(c, "refs/heads/") || c == "~DEFAULT_BRANCH" || c == "~ALL" ? c : "refs/heads/${c}"]
-      exclude = [for c in each.value.conditions.ref_name.exclude : startswith(c, "refs/heads/") ? c : "refs/heads/${c}"]
+      include = [
+        for c in each.value.conditions.ref_name.include :
+        startswith(c, local.ruleset_conditions_refs_prefix[each.value.target]) || c == "~DEFAULT_BRANCH" || c == "~ALL" ? c :
+        format("%s%s", local.ruleset_conditions_refs_prefix[each.value.target], c)
+      ]
+      exclude = [
+        for c in each.value.conditions.ref_name.exclude :
+        startswith(c, local.ruleset_conditions_refs_prefix[each.value.target]) ? c :
+        format("%s%s", local.ruleset_conditions_refs_prefix[each.value.target], c)
+      ]
     }
   }
 
