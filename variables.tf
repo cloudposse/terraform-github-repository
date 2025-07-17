@@ -384,9 +384,11 @@ variable "users" {
 variable "rulesets" {
   description = "A map of rulesets to configure for the repository"
   type = map(object({
-    name        = string
-    enforcement = string // disabled, active
-    target      = string // branch, tag
+    name = string
+    // disabled, active
+    enforcement = string
+    // branch, tag
+    target = string
     bypass_actors = optional(list(object({
       // always, pull_request
       bypass_mode = string
@@ -396,19 +398,22 @@ variable "rulesets" {
     })), [])
     conditions = object({
       ref_name = object({
-        include = optional(list(string), []) // ~DEFAULT_BRANCH to include the default branch or ~ALL
-        exclude = optional(list(string), []) // ~DEFAULT_BRANCH to exclude the default branch or ~ALL
+        // Supports ~DEFAULT_BRANCH or ~ALL
+        include = optional(list(string), [])
+        exclude = optional(list(string), [])
       })
     })
     rules = object({
       branch_name_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        // starts_with, ends_with, contains, regex
+        operator = string
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
       commit_author_email_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        // starts_with, ends_with, contains, regex
+        operator = string
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
@@ -421,23 +426,27 @@ variable "rulesets" {
         required_approving_review_count = number
       }), null),
       commit_message_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        // starts_with, ends_with, contains, regex
+        operator = string
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
       committer_email_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        // starts_with, ends_with, contains, regex
+        operator = string
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
       merge_queue = optional(object({
-        check_response_timeout_minutes    = optional(number, 60)
-        grouping_strategy                 = string // ALLGREEN, HEADGREEN
-        max_entries_to_build              = optional(number, 5)
-        max_entries_to_merge              = optional(number, 5)
-        merge_method                      = optional(string, "MERGE") // MERGE, SQUASH, REBASE
+        check_response_timeout_minutes = optional(number, 60)
+        // ALLGREEN, HEADGREEN
+        grouping_strategy    = string
+        max_entries_to_build = optional(number, 5)
+        max_entries_to_merge = optional(number, 5)
+        // MERGE, SQUASH, REBASE
+        merge_method                      = optional(string, "MERGE")
         min_entries_to_merge              = optional(number, 1)
         min_entries_to_merge_wait_minutes = optional(number, 5)
       }), null),
@@ -460,16 +469,20 @@ variable "rulesets" {
         do_not_enforce_on_create             = optional(bool, false)
       }), null),
       tag_name_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        // starts_with, ends_with, contains, regex
+        operator = string
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      // Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
+      // Unsupported due to drift.
+      // https://github.com/integrations/terraform-provider-github/pull/2701
       # required_code_scanning = optional(object({
       #   required_code_scanning_tool = list(object({
-      #     alerts_threshold          = string // none, errors, errors_and_warnings, all
-      #     security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
+      #     // none, errors, errors_and_warnings, all
+      #     alerts_threshold          = string
+      #     // none, critical, high_or_higher, medium_or_higher, all
+      #     security_alerts_threshold = string
       #     tool                      = string
       #   }))
       # }), null),

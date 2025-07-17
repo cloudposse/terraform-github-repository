@@ -1,8 +1,8 @@
+# Name of this project
+name: terraform-github-repository
 # Canonical GitHub repo
 github_repo: cloudposse/terraform-github-repository
 
-# Name of this project
-name: terraform-github-repository
 tags:
   - terraform
   - terraform-modules
@@ -84,7 +84,7 @@ usage: |-
 
   ```hcl
   module "github_repository" {
-    source  = "cloudposse/github-repository/github"
+    source  = "cloudposse/repository/github"
     # Cloud Posse recommends pinning every module to a specific version
     # version = "x.x.x"
 
