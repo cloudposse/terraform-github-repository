@@ -6,6 +6,9 @@ import (
   "testing"
   "context"
   "fmt"
+  "crypto/rand"
+  "crypto/rsa"
+  "golang.org/x/crypto/ssh"
 
   "github.com/gruntwork-io/terratest/modules/random"
   "github.com/gruntwork-io/terratest/modules/terraform"
@@ -23,6 +26,7 @@ func cleanup(t *testing.T, terraformOptions *terraform.Options, tempTestFolder s
 
 // Test the Terraform module in examples/complete using Terratest.
 func TestExamplesComplete(t *testing.T) {
+  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -42,7 +46,7 @@ func TestExamplesComplete(t *testing.T) {
     Vars: map[string]interface{}{
       "enabled":    true,
       "name": repositoryName,
-      "visibility": "private",
+      "visibility": "public",
     },
   }
 
@@ -64,7 +68,7 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, "Terraform acceptance tests", repo.GetDescription())
   assert.Equal(t, "http://example.com/", repo.GetHomepage())
   assert.Equal(t, false, repo.GetPrivate())
-  assert.Equal(t, "private", repo.GetVisibility())
+  assert.Equal(t, "public", repo.GetVisibility())
 
   // Additional assertions for repository attributes
   assert.Equal(t, false, repo.GetArchived())
@@ -324,7 +328,8 @@ func TestExamplesComplete(t *testing.T) {
 }
 
 // Test the Terraform module in examples/minimum using Terratest.
-func TestExamplesPrivate(t *testing.T) {
+func TestExamplesMinimum(t *testing.T) {
+  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -335,7 +340,9 @@ func TestExamplesPrivate(t *testing.T) {
 
   repositoryName := fmt.Sprintf("terraform-github-repository-test-%s", randID)
 
-  deployKey := "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCv3BXjoRly5ci0ex9NPClU2F93QnKlNGpYwsc+CzrS6ctAWRjfdcM2pLu16eQsIMw3D1eVUgMI/JX9EIJSW1iOK4he5AkfiZfiIlHiSmxqJOdWRd2P+oEXgKk0oK0KKXyfhD8N6QbfITZ/NJeR73BqB//BJOYYII7A6v1zvwAvtoFQyiDrIlLy+IgATuPdSJ543eAsqjDKzmAevBXneDxWWDQ4aq6EcfQM5aYLmR/32YTUllirznJW/8D+h//jD/iI3dtxuxSrjilGbh6JdEvzWSb5qEEpSoFldRZ4SFB5tLk8my4PD/plnxpuGvHdqQ9fsYzveIj3w+hzd37OwN6x"
+  deployKey, err := generateRSAKey()
+  assert.NoError(t, err)
+
   githubTestUser := "cloudposse-test-bot"
 
   terraformOptions := &terraform.Options{
@@ -499,7 +506,6 @@ func TestExamplesPrivate(t *testing.T) {
 
   test_team := teams[1]
 
-
   users, _, err := client.Repositories.ListCollaborators(context.Background(), owner, repositoryName, &github.ListCollaboratorsOptions{Permission: "admin"})
   assert.NoError(t, err)
   assert.NotNil(t, users)
@@ -560,6 +566,7 @@ func TestExamplesPrivate(t *testing.T) {
 
 // Test the Terraform module in examples/minimum using Terratest.
 func TestExamplesTagsRulesets(t *testing.T) {
+  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -684,6 +691,7 @@ func TestExamplesTagsRulesets(t *testing.T) {
 }
 
 func TestExamplesCompleteDisabled(t *testing.T) {
+  t.Parallel()
   randID := strings.ToLower(random.UniqueId())
 
   rootFolder := "../../"
@@ -715,6 +723,28 @@ func TestExamplesCompleteDisabled(t *testing.T) {
 
   // Should complete successfully without creating or changing any resources
   assert.Contains(t, results, "Resources: 0 added, 0 changed, 0 destroyed.")
+}
+
+func generateRSAKey() (string, error) {
+  bitSize := 4096
+
+  // Generate RSA key.
+  key, err := rsa.GenerateKey(rand.Reader, bitSize)
+
+  if err != nil {
+      return "", err
+  }
+
+  // Extract public component.
+  pub := key.Public()
+
+	// Extract the public key
+	sshPubKey, err := ssh.NewPublicKey(pub)
+	if err != nil {
+		return "", err
+	}
+
+  return strings.ReplaceAll(string(ssh.MarshalAuthorizedKey(sshPubKey)), "\n", ""), nil
 }
 
 
