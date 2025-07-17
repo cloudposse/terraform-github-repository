@@ -42,7 +42,7 @@ func TestExamplesComplete(t *testing.T) {
     Vars: map[string]interface{}{
       "enabled":    true,
       "name": repositoryName,
-      "visibility": "public",
+      "visibility": "private",
     },
   }
 
@@ -64,7 +64,7 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, "Terraform acceptance tests", repo.GetDescription())
   assert.Equal(t, "http://example.com/", repo.GetHomepage())
   assert.Equal(t, false, repo.GetPrivate())
-  assert.Equal(t, "public", repo.GetVisibility())
+  assert.Equal(t, "private", repo.GetVisibility())
 
   // Additional assertions for repository attributes
   assert.Equal(t, false, repo.GetArchived())
