@@ -335,7 +335,7 @@ func TestExamplesPrivate(t *testing.T) {
 
   repositoryName := fmt.Sprintf("terraform-github-repository-test-%s", randID)
 
-  deployKey := "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCpXx34NELRFyPu0tAtd+ic1uETwoPbTZd7doqCvNCPyV5SxE8p5IRNoLJvzQkx8aRHlzp1UEui4U7BfuMD3gxs2sWX/NVZ1qqRzl+6KgRCILUnprxmC6osoP+kkk3ZaW62gFtSGNOux21Cu6KP2cOdumYgRLvBsyns/D1vf2TLOQ=="
+  deployKey := "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCv3BXjoRly5ci0ex9NPClU2F93QnKlNGpYwsc+CzrS6ctAWRjfdcM2pLu16eQsIMw3D1eVUgMI/JX9EIJSW1iOK4he5AkfiZfiIlHiSmxqJOdWRd2P+oEXgKk0oK0KKXyfhD8N6QbfITZ/NJeR73BqB//BJOYYII7A6v1zvwAvtoFQyiDrIlLy+IgATuPdSJ543eAsqjDKzmAevBXneDxWWDQ4aq6EcfQM5aYLmR/32YTUllirznJW/8D+h//jD/iI3dtxuxSrjilGbh6JdEvzWSb5qEEpSoFldRZ4SFB5tLk8my4PD/plnxpuGvHdqQ9fsYzveIj3w+hzd37OwN6x"
   githubTestUser := "cloudposse-test-bot"
 
   terraformOptions := &terraform.Options{
@@ -347,7 +347,7 @@ func TestExamplesPrivate(t *testing.T) {
     Vars: map[string]interface{}{
       "enabled":    true,
       "name": repositoryName,
-      "visibility": "private",
+      "visibility": "public",
       "custom_properties": map[string]interface{}{
         "test-boolean": map[string]interface{}{
           "boolean": true,
@@ -449,7 +449,7 @@ func TestExamplesPrivate(t *testing.T) {
   repo, _, err := client.Repositories.Get(context.Background(), owner, repositoryName)
   assert.NoError(t, err)
 
-  assert.Equal(t, "private", repo.GetVisibility())
+  assert.Equal(t, "public", repo.GetVisibility())
 
   repoCustomProperties := repo.GetCustomProperties()
   assert.Equal(t, 4, len(repoCustomProperties))

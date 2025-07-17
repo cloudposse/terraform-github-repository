@@ -140,7 +140,6 @@ data "github_team" "environment_reviewers" {
   slug = each.value
 }
 
-
 resource "github_repository_environment" "default" {
   for_each = local.environments
 
