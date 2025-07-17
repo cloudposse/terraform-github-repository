@@ -76,9 +76,9 @@ labels = {
 
 environments = {
   staging = {
-    wait_timer           = 1
-    can_admins_bypass    = true
-    prevent_self_review  = true
+    wait_timer          = 1
+    can_admins_bypass   = true
+    prevent_self_review = true
     deployment_branch_policy = {
       protected_branches = true
       custom_branches    = null
@@ -89,15 +89,15 @@ environments = {
     }
   }
   development = {
-    wait_timer           = 5
-    can_admins_bypass    = false
-    prevent_self_review  = false
-    variables            = {}
+    wait_timer          = 5
+    can_admins_bypass   = false
+    prevent_self_review = false
+    variables           = {}
   }
   production = {
-    wait_timer           = 10
-    can_admins_bypass    = false
-    prevent_self_review  = false
+    wait_timer          = 10
+    can_admins_bypass   = false
+    prevent_self_review = false
     deployment_branch_policy = {
       protected_branches = false
       custom_branches = {
@@ -172,15 +172,15 @@ rulesets = {
         name     = "Test committer email"
         negate   = false
       }
-      creation           = true
-      deletion           = false
-      non_fast_forward   = true
+      creation         = true
+      deletion         = false
+      non_fast_forward = true
       pull_request = {
-        dismiss_stale_reviews_on_push      = true
-        require_code_owner_review          = true
-        require_last_push_approval         = true
-        required_approving_review_count    = 1
-        required_review_thread_resolution  = true
+        dismiss_stale_reviews_on_push     = true
+        require_code_owner_review         = true
+        require_last_push_approval        = true
+        required_approving_review_count   = 1
+        required_review_thread_resolution = true
       }
       required_deployments = {
         required_deployment_environments = [
@@ -195,7 +195,7 @@ rulesets = {
           }
         ]
         strict_required_status_checks_policy = true
-        do_not_enforce_on_create            = true
+        do_not_enforce_on_create             = true
       }
     }
   }
