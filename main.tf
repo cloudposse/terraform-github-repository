@@ -73,7 +73,7 @@ resource "github_repository" "default" {
 
   lifecycle {
     ignore_changes = [
-      template[*].include_all_branches,
+      template[0].include_all_branches,
     ]
   }
 }
