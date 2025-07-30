@@ -506,8 +506,8 @@ variable "rulesets" {
   }
 
   validation {
-    condition     = alltrue([for k, v in var.rulesets : contains(["disabled", "active"], v.enforcement)])
-    error_message = "Ruleset enforcement must be disabled or active"
+    condition     = alltrue([for k, v in var.rulesets : contains(["disabled", "active", "evaluate"], v.enforcement)])
+    error_message = "Ruleset enforcement must be disabled, active, or evaluate"
   }
 
   validation {
