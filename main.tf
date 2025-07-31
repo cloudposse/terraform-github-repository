@@ -343,6 +343,11 @@ locals {
     c.bypass_actors != null ? compact([for b in c.bypass_actors : b.actor_type == "Team" ? b.actor_id : null]) : []
   ])
 
+  ruleset_rules_integrations = flatten([
+    for e, c in local.rulesets :
+    c.bypass_actors != null ? compact([for b in c.bypass_actors : b.actor_type == "Integration" ? b.actor_id : null]) : []
+  ])
+
   ruleset_conditions_refs_prefix = {
     "branch" = "refs/heads/"
     "tag"    = "refs/tags/"
@@ -351,6 +356,12 @@ locals {
 
 data "github_team" "ruleset_rules_teams" {
   for_each = toset(local.ruleset_rules_teams)
+
+  slug = each.value
+}
+
+data "github_integration" "ruleset_rules_integrations" {
+  for_each = toset(local.ruleset_rules_integrations)
 
   slug = each.value
 }
@@ -386,7 +397,8 @@ resource "github_repository_ruleset" "default" {
       actor_id = (bypass_actors.value.actor_type == "OrganizationAdmin" ? "0" :
         bypass_actors.value.actor_type == "RepositoryRole" ? local.organization_roles_map[bypass_actors.value.actor_id] :
         bypass_actors.value.actor_type == "Team" ? data.github_team.ruleset_rules_teams[bypass_actors.value.actor_id].id :
-      bypass_actors.value.actor_id)
+        bypass_actors.value.actor_type == "Integration" ? data.github_integration.ruleset_rules_integrations[bypass_actors.value.actor_id].id :
+        bypass_actors.value.actor_id)
       actor_type = bypass_actors.value.actor_type
     }
   }
