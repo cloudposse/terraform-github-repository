@@ -382,11 +382,6 @@ variable "teams" {
   type        = map(string)
   default     = {}
   nullable    = false
-
-  validation {
-    condition     = var.team_repository == {} || var.teams == {}
-    error_message = "The 'team_repository' and 'teams' variables cannot both have values at the same time."
-  }
 }
 
 variable "team_repository" {
@@ -394,11 +389,6 @@ variable "team_repository" {
   type        = map(list(string))
   default     = {}
   nullable    = false
-
-  validation {
-    condition     = var.team_repository == {} || var.teams == {}
-    error_message = "The 'team_repository' and 'teams' variables cannot both have values at the same time."
-  }
 
   validation {
     condition     = alltrue([for permission, teams in var.team_repository : contains(["pull", "triage", "push", "maintain", "admin"], permission)])
