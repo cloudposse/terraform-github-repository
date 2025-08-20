@@ -203,7 +203,8 @@ Here is an example of using this module:
 | <a name="input_squash_merge_commit_title"></a> [squash\_merge\_commit\_title](#input\_squash\_merge\_commit\_title) | Squash merge commit title. Must be PR\_TITLE or COMMIT\_OR\_PR\_TITLE. | `string` | `"PR_TITLE"` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
-| <a name="input_teams"></a> [teams](#input\_teams) | A map of teams and their permissions for the repository | `map(string)` | `{}` | no |
+| <a name="input_teams"></a> [teams](#input\_teams) | A map of teams and their permissions for the repository. This will create github_repository_collaborators resources for each team. | `map(string)` | `{}` | no |
+| <a name="input_team_repository"></a> [team_repository](#input\_team_repository) | A map of permissions and their teams for the repository. This will create github_team_repository resources for each team. Format: { permission = [list of teams] } | `map(string)` | `{}` | no |
 | <a name="input_template"></a> [template](#input\_template) | Template repository | <pre>object({<br/>    owner                = string<br/>    name                 = string<br/>    include_all_branches = optional(bool, false)<br/>  })</pre> | `null` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
 | <a name="input_topics"></a> [topics](#input\_topics) | List of repository topics | `list(string)` | `[]` | no |
