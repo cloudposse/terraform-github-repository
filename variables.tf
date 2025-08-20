@@ -378,7 +378,7 @@ variable "labels" {
 }
 
 variable "teams" {
-  description = "A map of teams and their permissions for the repository. This will create github_repository_collaborators resources for each team."
+  description = "A map of teams and their permissions for the repository. This will create github_repository_collaborators resources for each team "
   type        = map(string)
   default     = {}
   nullable    = false
