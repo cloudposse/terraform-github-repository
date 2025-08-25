@@ -178,6 +178,10 @@ resource "github_repository_environment" "default" {
       custom_branch_policies = !deployment_branch_policy.value.protected_branches
     }
   }
+
+  depends_on = [
+    github_repository_collaborators.default
+  ]
 }
 
 locals {
