@@ -31,6 +31,15 @@ variable "template" {
   default = null
 }
 
+variable "fork" {
+  description = "Configuration for forking an existing repository"
+  type = object({
+    source_owner = string
+    source_repo  = string
+  })
+  default = null
+}
+
 variable "archived" {
   description = "Whether the repository is archived"
   type        = bool
@@ -204,11 +213,32 @@ variable "allow_update_branch" {
 variable "security_and_analysis" {
   description = "Security and analysis settings"
   type = object({
-    advanced_security               = bool
-    secret_scanning                 = bool
-    secret_scanning_push_protection = bool
+    advanced_security                     = optional(bool, false)
+    code_security                         = optional(bool, false)
+    secret_scanning                       = optional(bool, false)
+    secret_scanning_push_protection       = optional(bool, false)
+    secret_scanning_ai_detection          = optional(bool, false)
+    secret_scanning_non_provider_patterns = optional(bool, false)
   })
   default = null
+}
+
+variable "pages" {
+  description = "GitHub Pages configuration for the repository"
+  type = object({
+    source = optional(object({
+      branch = string
+      path   = optional(string, "/")
+    }), null)
+    build_type = optional(string, "workflow")
+    cname      = optional(string, null)
+  })
+  default = null
+
+  validation {
+    condition     = var.pages == null || try(contains(["legacy", "workflow"], var.pages.build_type), true)
+    error_message = "Pages build_type must be 'legacy' or 'workflow'"
+  }
 }
 
 variable "archive_on_destroy" {
@@ -395,15 +425,15 @@ variable "rulesets" {
   description = "A map of rulesets to configure for the repository"
   type = map(object({
     name = string
-    // disabled, active
+    // disabled, active, evaluate
     enforcement = string
-    // branch, tag
+    // branch, tag, push
     target = string
     bypass_actors = optional(list(object({
-      // always, pull_request
+      // always, pull_request, exempt
       bypass_mode = string
       actor_id    = optional(string, null)
-      // RepositoryRole, Team, Integration, OrganizationAdmin
+      // RepositoryRole, Team, Integration, OrganizationAdmin, DeployKey
       actor_type = string
     })), [])
     conditions = object({
@@ -428,9 +458,13 @@ variable "rulesets" {
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      creation         = optional(bool, false),
-      deletion         = optional(bool, false),
-      non_fast_forward = optional(bool, false),
+      creation                      = optional(bool, false),
+      deletion                      = optional(bool, false),
+      non_fast_forward              = optional(bool, false),
+      required_linear_history       = optional(bool, false),
+      required_signatures           = optional(bool, false),
+      update                        = optional(bool, false),
+      update_allows_fetch_and_merge = optional(bool, false),
       required_pull_request_reviews = optional(object({
         dismiss_stale_reviews           = bool
         required_approving_review_count = number
@@ -485,17 +519,29 @@ variable "rulesets" {
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      // Unsupported due to drift.
-      // https://github.com/integrations/terraform-provider-github/pull/2701
-      # required_code_scanning = optional(object({
-      #   required_code_scanning_tool = list(object({
-      #     // none, errors, errors_and_warnings, all
-      #     alerts_threshold          = string
-      #     // none, critical, high_or_higher, medium_or_higher, all
-      #     security_alerts_threshold = string
-      #     tool                      = string
-      #   }))
-      # }), null),
+      required_code_scanning = optional(object({
+        required_code_scanning_tool = list(object({
+          // none, errors, errors_and_warnings, all
+          alerts_threshold = string
+          // none, critical, high_or_higher, medium_or_higher, all
+          security_alerts_threshold = string
+          tool                      = string
+        }))
+      }), null),
+      // Push ruleset rules (only valid when target = "push")
+      file_path_restriction = optional(object({
+        restricted_file_paths = list(string)
+      }), null),
+      max_file_size = optional(object({
+        // 1-100 MB
+        max_file_size = number
+      }), null),
+      max_file_path_length = optional(object({
+        max_file_path_length = number
+      }), null),
+      file_extension_restriction = optional(object({
+        restricted_file_extensions = list(string)
+      }), null),
     }),
   }))
   default = {}
@@ -511,18 +557,18 @@ variable "rulesets" {
   }
 
   validation {
-    condition     = alltrue([for k, v in var.rulesets : contains(["branch", "tag"], v.target)])
-    error_message = "Ruleset target must be branch or tag"
+    condition     = alltrue([for k, v in var.rulesets : contains(["branch", "tag", "push"], v.target)])
+    error_message = "Ruleset target must be branch, tag, or push"
   }
 
   validation {
-    condition     = alltrue([for k, v in var.rulesets : try(contains(["always", "pull_request"], v.bypass_actors.bypass_mode), true)])
-    error_message = "Ruleset bypass mode must be always or pull_request"
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["always", "pull_request", "exempt"], v.bypass_actors.bypass_mode), true)])
+    error_message = "Ruleset bypass mode must be always, pull_request, or exempt"
   }
 
   validation {
-    condition     = alltrue([for k, v in var.rulesets : try(contains(["RepositoryRole", "Team", "Integration", "OrganizationAdmin"], v.bypass_actors.actor_type), true)])
-    error_message = "Ruleset actor type must be RepositoryRole, Team, Integration or OrganizationAdmin"
+    condition     = alltrue([for k, v in var.rulesets : try(contains(["RepositoryRole", "Team", "Integration", "OrganizationAdmin", "DeployKey"], v.bypass_actors.actor_type), true)])
+    error_message = "Ruleset actor type must be RepositoryRole, Team, Integration, OrganizationAdmin, or DeployKey"
   }
 
   validation {
@@ -573,5 +619,51 @@ variable "rulesets" {
   validation {
     condition     = alltrue([for k, v in var.rulesets : v.target == "tag" || try(v.rules.tag_name_pattern == null, true)])
     error_message = "Ruleset tag name pattern can be specified only for tag rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "push" || try(v.rules.file_path_restriction == null, true)])
+    error_message = "Ruleset file_path_restriction can be specified only for push rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "push" || try(v.rules.max_file_size == null, true)])
+    error_message = "Ruleset max_file_size can be specified only for push rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "push" || try(v.rules.max_file_path_length == null, true)])
+    error_message = "Ruleset max_file_path_length can be specified only for push rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "push" || try(v.rules.file_extension_restriction == null, true)])
+    error_message = "Ruleset file_extension_restriction can be specified only for push rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : try(v.rules.max_file_size.max_file_size >= 1 && v.rules.max_file_size.max_file_size <= 100, true)])
+    error_message = "Ruleset max_file_size must be between 1 and 100 MB"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : !v.rules.update_allows_fetch_and_merge || v.rules.update])
+    error_message = "Ruleset update_allows_fetch_and_merge requires update to be true"
+  }
+
+  validation {
+    condition = alltrue([for k, v in var.rulesets : try(alltrue([
+      for tool in v.rules.required_code_scanning.required_code_scanning_tool :
+      contains(["none", "errors", "errors_and_warnings", "all"], tool.alerts_threshold)
+    ]), true)])
+    error_message = "Ruleset required_code_scanning alerts_threshold must be none, errors, errors_and_warnings, or all"
+  }
+
+  validation {
+    condition = alltrue([for k, v in var.rulesets : try(alltrue([
+      for tool in v.rules.required_code_scanning.required_code_scanning_tool :
+      contains(["none", "critical", "high_or_higher", "medium_or_higher", "all"], tool.security_alerts_threshold)
+    ]), true)])
+    error_message = "Ruleset required_code_scanning security_alerts_threshold must be none, critical, high_or_higher, medium_or_higher, or all"
   }
 }
