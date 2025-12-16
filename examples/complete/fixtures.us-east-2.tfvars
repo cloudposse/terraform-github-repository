@@ -29,8 +29,18 @@ allow_update_branch                     = true
 
 security_and_analysis = {
   advanced_security               = false
+  code_security                   = true
   secret_scanning                 = true
   secret_scanning_push_protection = true
+}
+
+# GitHub Pages configuration
+pages = {
+  build_type = "workflow"
+  source = {
+    branch = "main"
+    path   = "/docs"
+  }
 }
 
 archive_on_destroy = false
@@ -172,9 +182,13 @@ rulesets = {
         name     = "Test committer email"
         negate   = false
       }
-      creation         = true
-      deletion         = false
-      non_fast_forward = true
+      creation                      = true
+      deletion                      = false
+      non_fast_forward              = true
+      required_linear_history       = true
+      required_signatures           = false
+      update                        = true
+      update_allows_fetch_and_merge = true
       pull_request = {
         dismiss_stale_reviews_on_push     = true
         require_code_owner_review         = true
@@ -196,6 +210,80 @@ rulesets = {
         ]
         strict_required_status_checks_policy = true
         do_not_enforce_on_create             = true
+      }
+      required_code_scanning = {
+        required_code_scanning_tool = [
+          {
+            alerts_threshold          = "errors"
+            security_alerts_threshold = "high_or_higher"
+            tool                      = "CodeQL"
+          }
+        ]
+      }
+    }
+  }
+  tag_protection = {
+    name        = "Tag protection"
+    enforcement = "active"
+    target      = "tag"
+    conditions = {
+      ref_name = {
+        include = ["~ALL"]
+        exclude = []
+      }
+    }
+    bypass_actors = [
+      {
+        bypass_mode = "always"
+        actor_type  = "OrganizationAdmin"
+      }
+    ]
+    rules = {
+      tag_name_pattern = {
+        operator = "starts_with"
+        pattern  = "v"
+        name     = "Semantic version tags"
+        negate   = false
+      }
+      creation = true
+      deletion = true
+    }
+  }
+  push_restrictions = {
+    name        = "Push restrictions"
+    enforcement = "evaluate"
+    target      = "push"
+    conditions = {
+      ref_name = {
+        include = ["~ALL"]
+        exclude = []
+      }
+    }
+    bypass_actors = [
+      {
+        bypass_mode = "always"
+        actor_type  = "OrganizationAdmin"
+      }
+    ]
+    rules = {
+      file_path_restriction = {
+        restricted_file_paths = [
+          ".github/workflows/*",
+          "terraform/*"
+        ]
+      }
+      max_file_size = {
+        max_file_size = 50
+      }
+      max_file_path_length = {
+        max_file_path_length = 256
+      }
+      file_extension_restriction = {
+        restricted_file_extensions = [
+          ".exe",
+          ".dll",
+          ".so"
+        ]
       }
     }
   }

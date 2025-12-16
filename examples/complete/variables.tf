@@ -13,6 +13,15 @@ variable "template" {
   default = null
 }
 
+variable "fork" {
+  description = "Configuration for forking an existing repository"
+  type = object({
+    source_owner = string
+    source_repo  = string
+  })
+  default = null
+}
+
 variable "description" {
   description = "Description of the repository"
   type        = string
@@ -209,9 +218,23 @@ variable "allow_update_branch" {
 variable "security_and_analysis" {
   description = "Security and analysis settings"
   type = object({
-    advanced_security               = bool
-    secret_scanning                 = bool
-    secret_scanning_push_protection = bool
+    advanced_security               = optional(bool, false)
+    code_security                   = optional(bool, false)
+    secret_scanning                 = optional(bool, false)
+    secret_scanning_push_protection = optional(bool, false)
+  })
+  default = null
+}
+
+variable "pages" {
+  description = "GitHub Pages configuration for the repository"
+  type = object({
+    source = optional(object({
+      branch = string
+      path   = optional(string, "/")
+    }), null)
+    build_type = optional(string, "workflow")
+    cname      = optional(string, null)
   })
   default = null
 }
@@ -400,13 +423,13 @@ variable "rulesets" {
   description = "A map of rulesets to configure for the repository"
   type = map(object({
     name        = string
-    enforcement = string // disabled, active
-    target      = string // branch, tag
+    enforcement = string // disabled, active, evaluate
+    target      = string // branch, tag, push
     bypass_actors = optional(list(object({
-      // always, pull_request
+      // always, pull_request, exempt
       bypass_mode = string
       actor_id    = optional(string, null)
-      // RepositoryRole, Team, Integration, OrganizationAdmin
+      // RepositoryRole, Team, Integration, OrganizationAdmin, DeployKey
       actor_type = string
     })), [])
     conditions = object({
@@ -417,32 +440,36 @@ variable "rulesets" {
     })
     rules = object({
       branch_name_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        operator = string // starts_with, ends_with, contains, regex
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
       commit_author_email_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        operator = string // starts_with, ends_with, contains, regex
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      creation         = optional(bool, false),
-      deletion         = optional(bool, false),
-      non_fast_forward = optional(bool, false),
+      creation                      = optional(bool, false),
+      deletion                      = optional(bool, false),
+      non_fast_forward              = optional(bool, false),
+      required_linear_history       = optional(bool, false),
+      required_signatures           = optional(bool, false),
+      update                        = optional(bool, false),
+      update_allows_fetch_and_merge = optional(bool, false),
       required_pull_request_reviews = optional(object({
         dismiss_stale_reviews           = bool
         required_approving_review_count = number
       }), null),
       commit_message_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        operator = string // starts_with, ends_with, contains, regex
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
       committer_email_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        operator = string // starts_with, ends_with, contains, regex
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
@@ -475,19 +502,31 @@ variable "rulesets" {
         do_not_enforce_on_create             = optional(bool, false)
       }), null),
       tag_name_pattern = optional(object({
-        operator = string // starts_with, ends_with, contains, equals
+        operator = string // starts_with, ends_with, contains, regex
         pattern  = string
         name     = optional(string, null)
         negate   = optional(bool, false)
       }), null),
-      // Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
-      # required_code_scanning = optional(object({
-      #   required_code_scanning_tool = list(object({
-      #     alerts_threshold          = string // none, errors, errors_and_warnings, all
-      #     security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
-      #     tool                      = string
-      #   }))
-      # }), null),
+      required_code_scanning = optional(object({
+        required_code_scanning_tool = list(object({
+          alerts_threshold          = string // none, errors, errors_and_warnings, all
+          security_alerts_threshold = string // none, critical, high_or_higher, medium_or_higher, all
+          tool                      = string
+        }))
+      }), null),
+      // Push ruleset rules (only valid when target = "push")
+      file_path_restriction = optional(object({
+        restricted_file_paths = list(string)
+      }), null),
+      max_file_size = optional(object({
+        max_file_size = number // 1-100 MB
+      }), null),
+      max_file_path_length = optional(object({
+        max_file_path_length = number
+      }), null),
+      file_extension_restriction = optional(object({
+        restricted_file_extensions = list(string)
+      }), null),
     }),
   }))
   default = {}
