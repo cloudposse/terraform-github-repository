@@ -79,18 +79,6 @@ resource "github_repository" "default" {
       secret_scanning_push_protection {
         status = security_and_analysis.value.secret_scanning_push_protection ? "enabled" : "disabled"
       }
-      dynamic "secret_scanning_ai_detection" {
-        for_each = security_and_analysis.value.secret_scanning_ai_detection ? [1] : []
-        content {
-          status = "enabled"
-        }
-      }
-      dynamic "secret_scanning_non_provider_patterns" {
-        for_each = security_and_analysis.value.secret_scanning_non_provider_patterns ? [1] : []
-        content {
-          status = "enabled"
-        }
-      }
     }
   }
 

@@ -213,12 +213,10 @@ variable "allow_update_branch" {
 variable "security_and_analysis" {
   description = "Security and analysis settings"
   type = object({
-    advanced_security                     = optional(bool, false)
-    code_security                         = optional(bool, false)
-    secret_scanning                       = optional(bool, false)
-    secret_scanning_push_protection       = optional(bool, false)
-    secret_scanning_ai_detection          = optional(bool, false)
-    secret_scanning_non_provider_patterns = optional(bool, false)
+    advanced_security               = optional(bool, false)
+    code_security                   = optional(bool, false)
+    secret_scanning                 = optional(bool, false)
+    secret_scanning_push_protection = optional(bool, false)
   })
   default = null
 }
