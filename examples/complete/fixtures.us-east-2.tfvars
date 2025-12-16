@@ -28,10 +28,12 @@ ignore_vulnerability_alerts_during_read = true
 allow_update_branch                     = true
 
 security_and_analysis = {
-  advanced_security               = false
-  code_security                   = true
-  secret_scanning                 = true
-  secret_scanning_push_protection = true
+  advanced_security                     = false
+  code_security                         = true
+  secret_scanning                       = true
+  secret_scanning_push_protection       = true
+  secret_scanning_ai_detection          = true
+  secret_scanning_non_provider_patterns = true
 }
 
 # GitHub Pages configuration
