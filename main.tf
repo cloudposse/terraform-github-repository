@@ -17,6 +17,11 @@ resource "github_repository" "default" {
     }
   }
 
+  # Fork configuration
+  fork         = var.fork != null
+  source_owner = var.fork != null ? var.fork.source_owner : null
+  source_repo  = var.fork != null ? var.fork.source_repo : null
+
   archived           = var.archived
   archive_on_destroy = var.archive_on_destroy
 
@@ -62,11 +67,45 @@ resource "github_repository" "default" {
           status = "enabled"
         }
       }
+      dynamic "code_security" {
+        for_each = security_and_analysis.value.code_security ? [1] : []
+        content {
+          status = "enabled"
+        }
+      }
       secret_scanning {
         status = security_and_analysis.value.secret_scanning ? "enabled" : "disabled"
       }
       secret_scanning_push_protection {
         status = security_and_analysis.value.secret_scanning_push_protection ? "enabled" : "disabled"
+      }
+      dynamic "secret_scanning_ai_detection" {
+        for_each = security_and_analysis.value.secret_scanning_ai_detection ? [1] : []
+        content {
+          status = "enabled"
+        }
+      }
+      dynamic "secret_scanning_non_provider_patterns" {
+        for_each = security_and_analysis.value.secret_scanning_non_provider_patterns ? [1] : []
+        content {
+          status = "enabled"
+        }
+      }
+    }
+  }
+
+  dynamic "pages" {
+    for_each = var.pages != null ? [var.pages] : []
+    content {
+      build_type = pages.value.build_type
+      cname      = pages.value.cname
+
+      dynamic "source" {
+        for_each = pages.value.source != null ? [pages.value.source] : []
+        content {
+          branch = source.value.branch
+          path   = source.value.path
+        }
       }
     }
   }
@@ -74,6 +113,10 @@ resource "github_repository" "default" {
   lifecycle {
     ignore_changes = [
       template[0].include_all_branches,
+      # For forked repositories, these are inherited from the source and shouldn't trigger changes
+      fork,
+      source_owner,
+      source_repo,
     ]
   }
 }
@@ -350,6 +393,7 @@ locals {
   ruleset_conditions_refs_prefix = {
     "branch" = "refs/heads/"
     "tag"    = "refs/tags/"
+    "push"   = ""
   }
 }
 
@@ -398,9 +442,13 @@ resource "github_repository_ruleset" "default" {
   dynamic "rules" {
     for_each = each.value.rules != null ? [each.value.rules] : []
     content {
-      creation         = rules.value.creation
-      deletion         = rules.value.deletion
-      non_fast_forward = rules.value.non_fast_forward
+      creation                      = rules.value.creation
+      deletion                      = rules.value.deletion
+      non_fast_forward              = rules.value.non_fast_forward
+      required_linear_history       = rules.value.required_linear_history
+      required_signatures           = rules.value.required_signatures
+      update                        = rules.value.update
+      update_allows_fetch_and_merge = rules.value.update_allows_fetch_and_merge
 
       dynamic "branch_name_pattern" {
         for_each = rules.value.branch_name_pattern != null ? [rules.value.branch_name_pattern] : []
@@ -495,20 +543,48 @@ resource "github_repository_ruleset" "default" {
         }
       }
 
-      # Unsupported due to drift. https://github.com/integrations/terraform-provider-github/pull/2701
-      # dynamic "required_code_scanning" {
-      #   for_each = rules.value.required_code_scanning != null ? [rules.value.required_code_scanning] : []
-      #   content {
-      #     dynamic "required_code_scanning_tool" {
-      #       for_each = required_code_scanning.value.required_code_scanning_tool
-      #       content {
-      #         alerts_threshold          = required_code_scanning_tool.value.alerts_threshold
-      #         security_alerts_threshold = required_code_scanning_tool.value.security_alerts_threshold
-      #         tool                      = required_code_scanning_tool.value.tool
-      #       }
-      #     }
-      #   }
-      # }
+      dynamic "required_code_scanning" {
+        for_each = rules.value.required_code_scanning != null ? [rules.value.required_code_scanning] : []
+        content {
+          dynamic "required_code_scanning_tool" {
+            for_each = required_code_scanning.value.required_code_scanning_tool
+            content {
+              alerts_threshold          = required_code_scanning_tool.value.alerts_threshold
+              security_alerts_threshold = required_code_scanning_tool.value.security_alerts_threshold
+              tool                      = required_code_scanning_tool.value.tool
+            }
+          }
+        }
+      }
+
+      # Push ruleset rules (only valid when target = "push")
+      dynamic "file_path_restriction" {
+        for_each = rules.value.file_path_restriction != null ? [rules.value.file_path_restriction] : []
+        content {
+          restricted_file_paths = file_path_restriction.value.restricted_file_paths
+        }
+      }
+
+      dynamic "max_file_size" {
+        for_each = rules.value.max_file_size != null ? [rules.value.max_file_size] : []
+        content {
+          max_file_size = max_file_size.value.max_file_size
+        }
+      }
+
+      dynamic "max_file_path_length" {
+        for_each = rules.value.max_file_path_length != null ? [rules.value.max_file_path_length] : []
+        content {
+          max_file_path_length = max_file_path_length.value.max_file_path_length
+        }
+      }
+
+      dynamic "file_extension_restriction" {
+        for_each = rules.value.file_extension_restriction != null ? [rules.value.file_extension_restriction] : []
+        content {
+          restricted_file_extensions = file_extension_restriction.value.restricted_file_extensions
+        }
+      }
     }
   }
   depends_on = [
