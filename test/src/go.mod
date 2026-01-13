@@ -1,8 +1,6 @@
 module github.com/cloudposse/terraform-example-module
 
-go 1.24
-
-toolchain go1.24.0
+go 1.24.0
 
 require (
 	// Known security flaws in terratest dependencies prior to v0.40.15
@@ -12,7 +10,7 @@ require (
 
 require (
 	github.com/google/go-github/v73 v73.0.0
-	golang.org/x/crypto v0.36.0
+	golang.org/x/crypto v0.45.0
 )
 
 require (
@@ -77,12 +75,12 @@ require (
 	github.com/urfave/cli/v2 v2.14.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	github.com/zclconf/go-cty v1.11.0 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/term v0.30.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/term v0.37.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.114.0 // indirect
