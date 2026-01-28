@@ -111,10 +111,11 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, "https://jira.example.com/browse/<num>", autolinkReferences[0].GetURLTemplate())
 
   // Get repository environments and add assertions
+  // Note: GitHub Pages automatically creates a "github-pages" environment when enabled
   envs, _, err := client.Repositories.ListEnvironments(context.Background(), owner, repositoryName, nil)
   assert.NoError(t, err)
   assert.NotNil(t, envs)
-  assert.Equal(t, 3, len(envs.Environments))
+  assert.Equal(t, 4, len(envs.Environments)) // staging, development, production + github-pages (auto-created by Pages)
 
   env, _, err := client.Repositories.GetEnvironment(context.Background(), owner, repositoryName, "staging")
   assert.NoError(t, err)
