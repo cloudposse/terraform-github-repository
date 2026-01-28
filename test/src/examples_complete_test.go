@@ -243,10 +243,12 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, "New functionality", feature2Label.GetDescription())
 
   // Get rulesets
+  // Note: Push rulesets are not supported on public repositories, so we only test branch and tag rulesets here.
+  // The fixtures include a commented-out push_restrictions example for private repository use.
   rulesets, _, err := client.Repositories.GetAllRulesets(context.Background(), owner, repositoryName, nil)
   assert.NoError(t, err)
   assert.NotNil(t, rulesets)
-  assert.Equal(t, 1, len(rulesets))
+  assert.Equal(t, 2, len(rulesets)) // branch (default) + tag (tag_protection)
 
   ruleset, _, err := client.Repositories.GetRuleset(context.Background(), owner, repositoryName, rulesets[0].GetID(), true)
   assert.NoError(t, err)
@@ -353,11 +355,9 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, 1, len(webhooksUrls))
   assert.Equal(t, fmt.Sprintf("https://api.github.com/repos/%s/%s/hooks/%d", owner, repositoryName, webhook.GetID()), webhooksUrls["notify-on-push"])
   assert.Equal(t, 0, len(collaboratorsInvitationIds))
-  assert.Equal(t, 1, len(rulesetsEtags))
-  assert.Equal(t, 1, len(rulesetsNodeIds))
-  assert.Equal(t, rulesets[0].GetNodeID(), rulesetsNodeIds["default"])
-  assert.Equal(t, 1, len(rulesetsRulesIds))
-  assert.Equal(t, fmt.Sprintf("%d", rulesets[0].GetID()), rulesetsRulesIds["default"])
+  assert.Equal(t, 2, len(rulesetsEtags))      // branch + tag rulesets
+  assert.Equal(t, 2, len(rulesetsNodeIds))    // branch + tag rulesets
+  assert.Equal(t, 2, len(rulesetsRulesIds))   // branch + tag rulesets
 }
 
 // Test the Terraform module in examples/minimum using Terratest.

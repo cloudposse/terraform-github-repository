@@ -124,6 +124,9 @@ environments = {
   }
 }
 
+# Note: Push rulesets (target = "push") are only supported on private repositories.
+# The CI tests use public repositories, so push rulesets cannot be tested there.
+# See the commented-out push_restrictions example below for push ruleset configuration.
 rulesets = {
   default = {
     name        = "Default protection"
@@ -251,37 +254,39 @@ rulesets = {
       deletion = true
     }
   }
-  push_restrictions = {
-    name        = "Push restrictions"
-    enforcement = "evaluate"
-    target      = "push"
-    # Note: conditions with ref_name is not supported for push rulesets
-    bypass_actors = [
-      {
-        bypass_mode = "always"
-        actor_type  = "OrganizationAdmin"
-      }
-    ]
-    rules = {
-      file_path_restriction = {
-        restricted_file_paths = [
-          ".github/workflows/*",
-          "terraform/*"
-        ]
-      }
-      max_file_size = {
-        max_file_size = 50
-      }
-      max_file_path_length = {
-        max_file_path_length = 256
-      }
-      file_extension_restriction = {
-        restricted_file_extensions = [
-          "*.exe",
-          "*.dll",
-          "*.so"
-        ]
-      }
-    }
-  }
+  # Push rulesets are only available for private repositories.
+  # Uncomment the following for private repos:
+  # push_restrictions = {
+  #   name        = "Push restrictions"
+  #   enforcement = "evaluate"
+  #   target      = "push"
+  #   # Note: conditions with ref_name is not supported for push rulesets
+  #   bypass_actors = [
+  #     {
+  #       bypass_mode = "always"
+  #       actor_type  = "OrganizationAdmin"
+  #     }
+  #   ]
+  #   rules = {
+  #     file_path_restriction = {
+  #       restricted_file_paths = [
+  #         ".github/workflows/*",
+  #         "terraform/*"
+  #       ]
+  #     }
+  #     max_file_size = {
+  #       max_file_size = 50
+  #     }
+  #     max_file_path_length = {
+  #       max_file_path_length = 256
+  #     }
+  #     file_extension_restriction = {
+  #       restricted_file_extensions = [
+  #         "*.exe",
+  #         "*.dll",
+  #         "*.so"
+  #       ]
+  #     }
+  #   }
+  # }
 }
