@@ -277,9 +277,9 @@ rulesets = {
       }
       file_extension_restriction = {
         restricted_file_extensions = [
-          ".exe",
-          ".dll",
-          ".so"
+          "*.exe",
+          "*.dll",
+          "*.so"
         ]
       }
     }
