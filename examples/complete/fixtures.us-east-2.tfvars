@@ -255,12 +255,7 @@ rulesets = {
     name        = "Push restrictions"
     enforcement = "evaluate"
     target      = "push"
-    conditions = {
-      ref_name = {
-        include = ["~ALL"]
-        exclude = []
-      }
-    }
+    # Note: conditions with ref_name is not supported for push rulesets
     bypass_actors = [
       {
         bypass_mode = "always"

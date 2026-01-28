@@ -434,12 +434,13 @@ variable "rulesets" {
       // RepositoryRole, Team, Integration, OrganizationAdmin, DeployKey
       actor_type = string
     })), [])
-    conditions = object({
+    // conditions is required for branch and tag rulesets, but not supported for push rulesets
+    conditions = optional(object({
       ref_name = object({
         include = optional(list(string), []) // ~DEFAULT_BRANCH to include the default branch or ~ALL
         exclude = optional(list(string), []) // ~DEFAULT_BRANCH to exclude the default branch or ~ALL
       })
-    })
+    }), null)
     rules = object({
       branch_name_pattern = optional(object({
         operator = string // starts_with, ends_with, contains, regex

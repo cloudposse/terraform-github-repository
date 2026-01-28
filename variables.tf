@@ -436,13 +436,14 @@ variable "rulesets" {
       // RepositoryRole, Team, Integration, OrganizationAdmin, DeployKey
       actor_type = string
     })), [])
-    conditions = object({
+    // conditions is required for branch and tag rulesets, but not supported for push rulesets
+    conditions = optional(object({
       ref_name = object({
         // Supports ~DEFAULT_BRANCH or ~ALL
         include = optional(list(string), [])
         exclude = optional(list(string), [])
       })
-    })
+    }), null)
     rules = object({
       branch_name_pattern = optional(object({
         // starts_with, ends_with, contains, regex
@@ -619,6 +620,16 @@ variable "rulesets" {
   validation {
     condition     = alltrue([for k, v in var.rulesets : v.target == "tag" || try(v.rules.tag_name_pattern == null, true)])
     error_message = "Ruleset tag name pattern can be specified only for tag rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target == "push" || v.conditions != null])
+    error_message = "Ruleset conditions with ref_name is required for branch and tag rulesets"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.rulesets : v.target != "push" || v.conditions == null])
+    error_message = "Ruleset conditions with ref_name is not supported for push rulesets"
   }
 
   validation {

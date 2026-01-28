@@ -412,18 +412,22 @@ resource "github_repository_ruleset" "default" {
   enforcement = each.value.enforcement
   target      = each.value.target
 
-  conditions {
-    ref_name {
-      include = [
-        for c in each.value.conditions.ref_name.include :
-        startswith(c, local.ruleset_conditions_refs_prefix[each.value.target]) || c == "~DEFAULT_BRANCH" || c == "~ALL" ? c :
-        format("%s%s", local.ruleset_conditions_refs_prefix[each.value.target], c)
-      ]
-      exclude = [
-        for c in each.value.conditions.ref_name.exclude :
-        startswith(c, local.ruleset_conditions_refs_prefix[each.value.target]) ? c :
-        format("%s%s", local.ruleset_conditions_refs_prefix[each.value.target], c)
-      ]
+  # conditions with ref_name is only supported for branch and tag rulesets, not push rulesets
+  dynamic "conditions" {
+    for_each = each.value.conditions != null ? [each.value.conditions] : []
+    content {
+      ref_name {
+        include = [
+          for c in conditions.value.ref_name.include :
+          startswith(c, local.ruleset_conditions_refs_prefix[each.value.target]) || c == "~DEFAULT_BRANCH" || c == "~ALL" ? c :
+          format("%s%s", local.ruleset_conditions_refs_prefix[each.value.target], c)
+        ]
+        exclude = [
+          for c in conditions.value.ref_name.exclude :
+          startswith(c, local.ruleset_conditions_refs_prefix[each.value.target]) ? c :
+          format("%s%s", local.ruleset_conditions_refs_prefix[each.value.target], c)
+        ]
+      }
     }
   }
 
