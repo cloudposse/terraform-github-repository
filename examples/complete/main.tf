@@ -8,6 +8,7 @@ module "example" {
   visibility  = var.visibility
 
   template = var.template
+  fork     = var.fork
 
   homepage_url = var.homepage_url
   topics       = var.topics
@@ -50,6 +51,7 @@ module "example" {
   default_branch              = var.default_branch
   enable_vulnerability_alerts = var.enable_vulnerability_alerts
   security_and_analysis       = var.security_and_analysis
+  pages                       = var.pages
 
   custom_properties = var.custom_properties
   environments      = var.environments
