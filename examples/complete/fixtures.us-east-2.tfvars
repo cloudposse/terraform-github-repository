@@ -28,9 +28,21 @@ ignore_vulnerability_alerts_during_read = true
 allow_update_branch                     = true
 
 security_and_analysis = {
-  advanced_security               = false
-  secret_scanning                 = true
-  secret_scanning_push_protection = true
+  advanced_security                     = false
+  code_security                         = true
+  secret_scanning                       = true
+  secret_scanning_push_protection       = true
+  secret_scanning_ai_detection          = true
+  secret_scanning_non_provider_patterns = true
+}
+
+# GitHub Pages configuration
+pages = {
+  build_type = "workflow"
+  source = {
+    branch = "main"
+    path   = "/docs"
+  }
 }
 
 archive_on_destroy = false
@@ -112,6 +124,9 @@ environments = {
   }
 }
 
+# Note: Push rulesets (target = "push") are only supported on private repositories.
+# The CI tests use public repositories, so push rulesets cannot be tested there.
+# See the commented-out push_restrictions example below for push ruleset configuration.
 rulesets = {
   default = {
     name        = "Default protection"
@@ -172,9 +187,13 @@ rulesets = {
         name     = "Test committer email"
         negate   = false
       }
-      creation         = true
-      deletion         = false
-      non_fast_forward = true
+      creation                      = true
+      deletion                      = false
+      non_fast_forward              = true
+      required_linear_history       = true
+      required_signatures           = false
+      update                        = true
+      update_allows_fetch_and_merge = true
       pull_request = {
         dismiss_stale_reviews_on_push     = true
         require_code_owner_review         = true
@@ -197,6 +216,77 @@ rulesets = {
         strict_required_status_checks_policy = true
         do_not_enforce_on_create             = true
       }
+      required_code_scanning = {
+        required_code_scanning_tool = [
+          {
+            alerts_threshold          = "errors"
+            security_alerts_threshold = "high_or_higher"
+            tool                      = "CodeQL"
+          }
+        ]
+      }
     }
   }
+  tag_protection = {
+    name        = "Tag protection"
+    enforcement = "active"
+    target      = "tag"
+    conditions = {
+      ref_name = {
+        include = ["~ALL"]
+        exclude = []
+      }
+    }
+    bypass_actors = [
+      {
+        bypass_mode = "always"
+        actor_type  = "OrganizationAdmin"
+      }
+    ]
+    rules = {
+      tag_name_pattern = {
+        operator = "starts_with"
+        pattern  = "v"
+        name     = "Semantic version tags"
+        negate   = false
+      }
+      creation = true
+      deletion = true
+    }
+  }
+  # Push rulesets are only available for private repositories.
+  # Uncomment the following for private repos:
+  # push_restrictions = {
+  #   name        = "Push restrictions"
+  #   enforcement = "evaluate"
+  #   target      = "push"
+  #   # Note: conditions with ref_name is not supported for push rulesets
+  #   bypass_actors = [
+  #     {
+  #       bypass_mode = "always"
+  #       actor_type  = "OrganizationAdmin"
+  #     }
+  #   ]
+  #   rules = {
+  #     file_path_restriction = {
+  #       restricted_file_paths = [
+  #         ".github/workflows/*",
+  #         "terraform/*"
+  #       ]
+  #     }
+  #     max_file_size = {
+  #       max_file_size = 50
+  #     }
+  #     max_file_path_length = {
+  #       max_file_path_length = 256
+  #     }
+  #     file_extension_restriction = {
+  #       restricted_file_extensions = [
+  #         "*.exe",
+  #         "*.dll",
+  #         "*.so"
+  #       ]
+  #     }
+  #   }
+  # }
 }
