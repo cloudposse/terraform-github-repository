@@ -56,14 +56,15 @@ module "example" {
   custom_properties = var.custom_properties
   environments      = var.environments
 
-  variables   = var.variables
-  secrets     = var.secrets
-  deploy_keys = var.deploy_keys
-  webhooks    = var.webhooks
-  labels      = var.labels
-  teams       = var.teams
-  users       = var.users
-  rulesets    = var.rulesets
+  variables       = var.variables
+  secrets         = var.secrets
+  deploy_keys     = var.deploy_keys
+  webhooks        = var.webhooks
+  labels          = var.labels
+  teams           = var.teams
+  team_repository = var.team_repository
+  users           = var.users
+  rulesets        = var.rulesets
 
 }
 

@@ -379,6 +379,25 @@ resource "github_repository_collaborators" "default" {
 }
 
 locals {
+  team_repository = merge([
+    for permission, teams in var.team_repository : {
+      for team in teams : "${team}_${permission}" => {
+        team_id    = team
+        permission = permission
+      }
+    }
+  ]...)
+}
+
+resource "github_team_repository" "default" {
+  for_each = module.this.enabled && length(var.teams) == 0 && length(var.team_repository) > 0 ? local.team_repository : {}
+
+  repository = join("", github_repository.default[*].name)
+  team_id    = each.value.team_id
+  permission = each.value.permission
+}
+
+locals {
   organization_roles_map = {
     "maintain" = "2"
     "write"    = "4"
