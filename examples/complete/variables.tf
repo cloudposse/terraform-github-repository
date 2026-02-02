@@ -75,12 +75,6 @@ variable "has_wiki" {
   default     = false
 }
 
-variable "has_downloads" {
-  description = "(DEPRECATED) Whether the repository has downloads enabled. This attribute is deprecated by GitHub and will be removed in a future version of this module."
-  type        = bool
-  default     = false
-}
-
 variable "is_template" {
   description = "Whether the repository is a template"
   type        = bool
