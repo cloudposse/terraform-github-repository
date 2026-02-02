@@ -7,7 +7,6 @@ has_issues                              = true
 has_discussions                         = true
 has_projects                            = true
 has_wiki                                = true
-has_downloads                           = true
 is_template                             = true
 allow_merge_commit                      = true
 merge_commit_title                      = "MERGE_MESSAGE"
