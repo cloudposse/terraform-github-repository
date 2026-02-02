@@ -109,7 +109,7 @@ Here is an example of using this module:
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_github"></a> [github](#requirement\_github) | >= 6.9.0 |
 
 ## Providers
@@ -178,7 +178,7 @@ Here is an example of using this module:
 | <a name="input_fork"></a> [fork](#input\_fork) | Configuration for forking an existing repository | <pre>object({<br/>    source_owner = string<br/>    source_repo  = string<br/>  })</pre> | `null` | no |
 | <a name="input_gitignore_template"></a> [gitignore\_template](#input\_gitignore\_template) | Gitignore template | `string` | `null` | no |
 | <a name="input_has_discussions"></a> [has\_discussions](#input\_has\_discussions) | Whether the repository has discussions enabled | `bool` | `false` | no |
-| <a name="input_has_downloads"></a> [has\_downloads](#input\_has\_downloads) | Whether the repository has downloads enabled | `bool` | `false` | no |
+| <a name="input_has_downloads"></a> [has\_downloads](#input\_has\_downloads) | (DEPRECATED) Whether the repository has downloads enabled. This attribute is deprecated by GitHub and will be removed in a future version of this module. | `bool` | `false` | no |
 | <a name="input_has_issues"></a> [has\_issues](#input\_has\_issues) | Whether the repository has issues enabled | `bool` | `false` | no |
 | <a name="input_has_projects"></a> [has\_projects](#input\_has\_projects) | Whether the repository has projects enabled | `bool` | `false` | no |
 | <a name="input_has_wiki"></a> [has\_wiki](#input\_has\_wiki) | Whether the repository has wiki enabled | `bool` | `false` | no |
