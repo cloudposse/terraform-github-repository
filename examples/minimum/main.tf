@@ -18,7 +18,6 @@ module "example" {
   is_template = var.is_template
 
   has_discussions = var.has_discussions
-  has_downloads   = var.has_downloads
   has_issues      = var.has_issues
   has_projects    = var.has_projects
   has_wiki        = var.has_wiki

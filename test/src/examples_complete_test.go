@@ -76,7 +76,6 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, true, repo.GetHasProjects())
   assert.Equal(t, true, repo.GetHasDiscussions())
   assert.Equal(t, true, repo.GetHasWiki())
-  assert.Equal(t, true, repo.GetHasDownloads())
   assert.Equal(t, true, repo.GetIsTemplate())
   assert.Equal(t, true, repo.GetAllowSquashMerge())
   assert.Equal(t, "COMMIT_OR_PR_TITLE", repo.GetSquashMergeCommitTitle())

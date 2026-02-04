@@ -75,12 +75,6 @@ variable "has_wiki" {
   default     = false
 }
 
-variable "has_downloads" {
-  description = "Whether the repository has downloads enabled"
-  type        = bool
-  default     = false
-}
-
 variable "is_template" {
   description = "Whether the repository is a template"
   type        = bool

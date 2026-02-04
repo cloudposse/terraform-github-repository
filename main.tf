@@ -28,7 +28,6 @@ resource "github_repository" "default" {
   is_template = var.is_template
 
   has_discussions = var.has_discussions
-  has_downloads   = var.has_downloads
   has_issues      = var.has_issues
   has_projects    = var.has_projects
   has_wiki        = var.has_wiki
@@ -594,4 +593,11 @@ resource "github_repository_ruleset" "default" {
   depends_on = [
     github_repository_environment.default
   ]
+}
+
+check "has_downloads_deprecation" {
+  assert {
+    condition     = var.has_downloads == false
+    error_message = "DEPRECATION WARNING: The 'has_downloads' variable is deprecated. GitHub has removed this feature and this variable will be removed in a future version of this module. Please remove 'has_downloads' from your configuration."
+  }
 }
