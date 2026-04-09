@@ -70,12 +70,6 @@ variable "has_wiki" {
   default     = false
 }
 
-variable "has_downloads" {
-  description = "(DEPRECATED) Whether the repository has downloads enabled. This attribute is deprecated by GitHub and will be removed in a future version of this module."
-  type        = bool
-  default     = false
-}
-
 variable "is_template" {
   description = "Whether the repository is a template"
   type        = bool
@@ -188,12 +182,6 @@ variable "gitignore_template" {
 
 variable "auto_init" {
   description = "Auto-initialize the repository"
-  type        = bool
-  default     = false
-}
-
-variable "ignore_vulnerability_alerts_during_read" {
-  description = "Ignore vulnerability alerts during read"
   type        = bool
   default     = false
 }

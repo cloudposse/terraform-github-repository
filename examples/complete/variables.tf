@@ -191,12 +191,6 @@ variable "auto_init" {
   default     = false
 }
 
-variable "ignore_vulnerability_alerts_during_read" {
-  description = "Ignore vulnerability alerts during read"
-  type        = bool
-  default     = false
-}
-
 variable "enable_vulnerability_alerts" {
   description = "Enable vulnerability alerts"
   type        = bool

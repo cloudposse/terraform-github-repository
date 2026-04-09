@@ -55,8 +55,6 @@ resource "github_repository" "default" {
 
   vulnerability_alerts = var.visibility != "public" ? var.enable_vulnerability_alerts : true
 
-  ignore_vulnerability_alerts_during_read = var.ignore_vulnerability_alerts_during_read
-
   dynamic "security_and_analysis" {
     for_each = var.security_and_analysis != null ? [var.security_and_analysis] : []
     content {
@@ -593,11 +591,4 @@ resource "github_repository_ruleset" "default" {
   depends_on = [
     github_repository_environment.default
   ]
-}
-
-check "has_downloads_deprecation" {
-  assert {
-    condition     = var.has_downloads == false
-    error_message = "DEPRECATION WARNING: The 'has_downloads' variable is deprecated. GitHub has removed this feature and this variable will be removed in a future version of this module. Please remove 'has_downloads' from your configuration."
-  }
 }

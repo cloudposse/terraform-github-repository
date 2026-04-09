@@ -44,8 +44,6 @@ module "example" {
 
   web_commit_signoff_required = var.web_commit_signoff_required
 
-  ignore_vulnerability_alerts_during_read = var.ignore_vulnerability_alerts_during_read
-
   autolink_references         = var.autolink_references
   default_branch              = var.default_branch
   enable_vulnerability_alerts = var.enable_vulnerability_alerts

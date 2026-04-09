@@ -23,7 +23,6 @@ gitignore_template                      = "TeX"
 license_template                        = "GPL-3.0"
 auto_init                               = true
 topics                                  = ["terraform", "github", "test"]
-ignore_vulnerability_alerts_during_read = true
 allow_update_branch                     = true
 
 security_and_analysis = {
