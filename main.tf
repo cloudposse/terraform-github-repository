@@ -137,6 +137,7 @@ resource "github_repository_autolink_reference" "default" {
   key_prefix = each.value.key_prefix
 
   target_url_template = each.value.target_url_template
+  is_alphanumeric     = each.value.is_alphanumeric
 }
 
 
