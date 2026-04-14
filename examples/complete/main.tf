@@ -8,6 +8,7 @@ module "example" {
   visibility  = var.visibility
 
   template = var.template
+  fork     = var.fork
 
   homepage_url = var.homepage_url
   topics       = var.topics
@@ -18,7 +19,6 @@ module "example" {
   is_template = var.is_template
 
   has_discussions = var.has_discussions
-  has_downloads   = var.has_downloads
   has_issues      = var.has_issues
   has_projects    = var.has_projects
   has_wiki        = var.has_wiki
@@ -50,18 +50,20 @@ module "example" {
   default_branch              = var.default_branch
   enable_vulnerability_alerts = var.enable_vulnerability_alerts
   security_and_analysis       = var.security_and_analysis
+  pages                       = var.pages
 
   custom_properties = var.custom_properties
   environments      = var.environments
 
-  variables   = var.variables
-  secrets     = var.secrets
-  deploy_keys = var.deploy_keys
-  webhooks    = var.webhooks
-  labels      = var.labels
-  teams       = var.teams
-  users       = var.users
-  rulesets    = var.rulesets
+  variables       = var.variables
+  secrets         = var.secrets
+  deploy_keys     = var.deploy_keys
+  webhooks        = var.webhooks
+  labels          = var.labels
+  teams           = var.teams
+  team_repository = var.team_repository
+  users           = var.users
+  rulesets        = var.rulesets
 
 }
 

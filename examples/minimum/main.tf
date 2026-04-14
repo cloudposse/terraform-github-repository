@@ -18,7 +18,6 @@ module "example" {
   is_template = var.is_template
 
   has_discussions = var.has_discussions
-  has_downloads   = var.has_downloads
   has_issues      = var.has_issues
   has_projects    = var.has_projects
   has_wiki        = var.has_wiki
@@ -54,12 +53,13 @@ module "example" {
   custom_properties = var.custom_properties
   environments      = var.environments
 
-  variables   = var.variables
-  secrets     = var.secrets
-  deploy_keys = var.deploy_keys
-  webhooks    = var.webhooks
-  labels      = var.labels
-  teams       = var.teams
-  users       = var.users
-  rulesets    = var.rulesets
+  variables       = var.variables
+  secrets         = var.secrets
+  deploy_keys     = var.deploy_keys
+  webhooks        = var.webhooks
+  labels          = var.labels
+  teams           = var.teams
+  team_repository = var.team_repository
+  users           = var.users
+  rulesets        = var.rulesets
 }

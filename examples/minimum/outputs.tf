@@ -53,11 +53,6 @@ output "collaborators_invitation_ids" {
   value       = module.example.collaborators_invitation_ids
 }
 
-output "rulesets_etags" {
-  description = "Rulesets etags"
-  value       = module.example.rulesets_etags
-}
-
 output "rulesets_node_ids" {
   description = "Rulesets node IDs"
   value       = module.example.rulesets_node_ids
