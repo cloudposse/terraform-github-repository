@@ -421,6 +421,12 @@ variable "users" {
   nullable    = false
 }
 
+variable "organization_repository_roles_enabled" {
+  description = "Whether to use organization repository roles."
+  type        = bool
+  default     = false
+}
+
 variable "rulesets" {
   description = "A map of rulesets to configure for the repository"
   type = map(object({
