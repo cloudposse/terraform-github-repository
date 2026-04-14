@@ -449,7 +449,7 @@ resource "github_repository_ruleset" "default" {
       required_linear_history       = rules.value.required_linear_history
       required_signatures           = rules.value.required_signatures
       update                        = rules.value.update
-      update_allows_fetch_and_merge = rules.value.update_allows_fetch_and_merge
+      update_allows_fetch_and_merge = each.value.target == "branch" ? null : rules.value.update_allows_fetch_and_merge
 
       dynamic "branch_name_pattern" {
         for_each = rules.value.branch_name_pattern != null ? [rules.value.branch_name_pattern] : []
