@@ -53,11 +53,6 @@ output "collaborators_invitation_ids" {
   value       = module.this.enabled ? github_repository_collaborators.default[*].invitation_ids : []
 }
 
-output "rulesets_etags" {
-  description = "Rulesets etags"
-  value       = { for k, v in github_repository_ruleset.default : k => v.etag }
-}
-
 output "rulesets_node_ids" {
   description = "Rulesets node IDs"
   value       = { for k, v in github_repository_ruleset.default : k => v.node_id }
