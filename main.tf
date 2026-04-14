@@ -1,7 +1,7 @@
 resource "github_repository" "default" {
   count = module.this.enabled ? 1 : 0
 
-  name        = module.this.id
+  name        = var.name
   description = var.description
   visibility  = var.visibility
 
