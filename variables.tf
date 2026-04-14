@@ -408,10 +408,22 @@ variable "labels" {
 }
 
 variable "teams" {
-  description = "A map of teams and their permissions for the repository"
+  description = "A map of teams and their permissions for the repository. This will create github_repository_collaborators resources for each team "
   type        = map(string)
   default     = {}
   nullable    = false
+}
+
+variable "team_repository" {
+  description = "A map of permissions and their teams for the repository. This will create github_team_repository resources for each team. Format: { permission = [list of teams] }"
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+
+  validation {
+    condition     = alltrue([for permission, teams in var.team_repository : contains(["pull", "triage", "push", "maintain", "admin"], permission)])
+    error_message = "Team repository permissions must be one of: pull, triage, push, maintain, admin"
+  }
 }
 
 variable "users" {
