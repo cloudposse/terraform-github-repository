@@ -227,7 +227,6 @@ Here is an example of using this module:
 | <a name="output_node_id"></a> [node\_id](#output\_node\_id) | Node ID of the created repository |
 | <a name="output_primary_language"></a> [primary\_language](#output\_primary\_language) | Primary language of the created repository |
 | <a name="output_repo_id"></a> [repo\_id](#output\_repo\_id) | Repository ID of the created repository |
-| <a name="output_rulesets_etags"></a> [rulesets\_etags](#output\_rulesets\_etags) | Rulesets etags |
 | <a name="output_rulesets_node_ids"></a> [rulesets\_node\_ids](#output\_rulesets\_node\_ids) | Rulesets node IDs |
 | <a name="output_rulesets_rules_ids"></a> [rulesets\_rules\_ids](#output\_rulesets\_rules\_ids) | Rulesets rules IDs |
 | <a name="output_ssh_clone_url"></a> [ssh\_clone\_url](#output\_ssh\_clone\_url) | SSH clone URL of the created repository |

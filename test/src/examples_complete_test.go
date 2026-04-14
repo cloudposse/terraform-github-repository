@@ -339,7 +339,6 @@ func TestExamplesComplete(t *testing.T) {
   primaryLanguage := terraform.Output(t, terraformOptions, "primary_language")
   webhooksUrls := terraform.OutputMap(t, terraformOptions, "webhooks_urls")
   collaboratorsInvitationIds := terraform.OutputList(t, terraformOptions, "collaborators_invitation_ids")
-  rulesetsEtags := terraform.OutputMap(t, terraformOptions, "rulesets_etags")
   rulesetsNodeIds := terraform.OutputMap(t, terraformOptions, "rulesets_node_ids")
   rulesetsRulesIds := terraform.OutputMap(t, terraformOptions, "rulesets_rules_ids")
 
@@ -355,7 +354,6 @@ func TestExamplesComplete(t *testing.T) {
   assert.Equal(t, 1, len(webhooksUrls))
   assert.Equal(t, fmt.Sprintf("https://api.github.com/repos/%s/%s/hooks/%d", owner, repositoryName, webhook.GetID()), webhooksUrls["notify-on-push"])
   assert.Equal(t, 0, len(collaboratorsInvitationIds))
-  assert.Equal(t, 2, len(rulesetsEtags))      // branch + tag rulesets
   assert.Equal(t, 2, len(rulesetsNodeIds))    // branch + tag rulesets
   assert.Equal(t, 2, len(rulesetsRulesIds))   // branch + tag rulesets
 }
