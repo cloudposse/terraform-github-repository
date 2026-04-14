@@ -395,12 +395,20 @@ resource "github_team_repository" "default" {
 }
 
 locals {
-  organization_roles_map = {
+  organization_repository_roles_enabled = module.this.enabled && var.organization_repository_roles_enabled
+  base_repository_roles_map = {
     "maintain" = "2"
     "write"    = "4"
     "admin"    = "5"
   }
-
+  custom_repository_roles_map = local.organization_repository_roles_enabled ? {
+    for role in data.github_organization_repository_roles.ruleset_rules_repository_roles[0].roles :
+    role.name => role.role_id
+  } : {}
+  repository_roles_map = merge(
+    local.base_repository_roles_map,
+    local.custom_repository_roles_map,
+  )
   ruleset_rules_teams = flatten([
     for e, c in local.rulesets :
     c.bypass_actors != null ? compact([for b in c.bypass_actors : b.actor_type == "Team" ? b.actor_id : null]) : []
@@ -411,6 +419,10 @@ locals {
     "tag"    = "refs/tags/"
     "push"   = ""
   }
+}
+
+data "github_organization_repository_roles" "ruleset_rules_repository_roles" {
+  count = local.organization_repository_roles_enabled ? 1 : 0
 }
 
 data "github_team" "ruleset_rules_teams" {
@@ -452,7 +464,7 @@ resource "github_repository_ruleset" "default" {
     content {
       bypass_mode = bypass_actors.value.bypass_mode
       actor_id = (bypass_actors.value.actor_type == "OrganizationAdmin" ? "0" :
-        bypass_actors.value.actor_type == "RepositoryRole" ? local.organization_roles_map[bypass_actors.value.actor_id] :
+        bypass_actors.value.actor_type == "RepositoryRole" ? local.repository_roles_map[bypass_actors.value.actor_id] :
         bypass_actors.value.actor_type == "Team" ? data.github_team.ruleset_rules_teams[bypass_actors.value.actor_id].id :
       bypass_actors.value.actor_id)
       actor_type = bypass_actors.value.actor_type
