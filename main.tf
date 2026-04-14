@@ -579,6 +579,14 @@ resource "github_repository_ruleset" "default" {
         }
       }
 
+      dynamic "copilot_code_review" {
+        for_each = rules.value.copilot_code_review != null ? [rules.value.copilot_code_review] : []
+        content {
+          review_on_push             = copilot_code_review.value.review_on_push
+          review_draft_pull_requests = copilot_code_review.value.review_draft_pull_requests
+        }
+      }
+
       # Push ruleset rules (only valid when target = "push")
       dynamic "file_path_restriction" {
         for_each = rules.value.file_path_restriction != null ? [rules.value.file_path_restriction] : []
