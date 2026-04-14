@@ -529,6 +529,10 @@ variable "rulesets" {
           tool                      = string
         }))
       }), null),
+      copilot_code_review = optional(object({
+        review_on_push             = optional(bool, false)
+        review_draft_pull_requests = optional(bool, false)
+      }), null),
       // Push ruleset rules (only valid when target = "push")
       file_path_restriction = optional(object({
         restricted_file_paths = list(string)
