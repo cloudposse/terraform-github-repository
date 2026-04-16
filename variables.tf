@@ -371,8 +371,9 @@ variable "webhooks" {
     insecure_ssl = optional(bool, false)
     secret       = optional(string, null)
   }))
-  default  = {}
-  nullable = false
+  default   = {}
+  sensitive = true
+  nullable  = false
 
   validation {
     condition     = alltrue([for k, v in var.webhooks : can(regex("^http(s)?://", v.url))])

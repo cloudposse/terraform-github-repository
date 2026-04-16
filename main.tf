@@ -304,7 +304,7 @@ locals {
   variables   = module.this.enabled ? var.variables : {}
   secrets     = module.this.enabled ? { for k, v in nonsensitive(var.secrets) : k => sensitive(v) } : {}
   deploy_keys = module.this.enabled ? var.deploy_keys : {}
-  webhooks    = module.this.enabled ? var.webhooks : {}
+  webhooks    = module.this.enabled ? { for k, v in nonsensitive(var.webhooks) : k => v } : {}
   labels      = module.this.enabled ? var.labels : {}
   rulesets    = module.this.enabled ? var.rulesets : {}
 }
