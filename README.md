@@ -33,6 +33,7 @@
 Terraform Module to provision a GitHub Repository with advanced settings.
 
 
+
 > [!TIP]
 > #### 👽 Use Atmos with Terraform
 > Cloud Posse uses [`atmos`](https://atmos.tools) to easily orchestrate multiple environments using Terraform. <br/>
@@ -43,6 +44,7 @@ Terraform Module to provision a GitHub Repository with advanced settings.
 > <img src="https://github.com/cloudposse/atmos/blob/main/docs/demo.gif?raw=true"/><br/>
 > <i>Example of running <a href="https://atmos.tools"><code>atmos</code></a> to manage infrastructure from our <a href="https://atmos.tools/quick-start/">Quick Start</a> tutorial.</i>
 > </detalis>
+
 
 
 ## Introduction
@@ -110,12 +112,6 @@ Here is an example of using this module:
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_github"></a> [github](#requirement\_github) | >= 6.11.0 |
-
-## Providers
-
-| Name | Version |
-| ---- | ------- |
-| <a name="provider_github"></a> [github](#provider\_github) | >= 6.11.0 |
 
 ## Modules
 
